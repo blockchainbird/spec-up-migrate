@@ -61,3 +61,26 @@ lib/build/
 # Logs
 logs
 *.log
+
+# Test directories and temporary files created during development
+test-cleanup/
+fresh-migration-test/
+final-test/
+mock-spec-up/
+migrated/
+
+# Backup files created during migration testing
+*-backup.js
+*-backup.json
+*-backup.*
+specs-backup.json
+.gitignore-backup
+
+# Development history and temporary files
+.history/
+test-spec.md
+config.json
+
+# Migration tool specific temporary outputs
+migration-*
+backup-*
