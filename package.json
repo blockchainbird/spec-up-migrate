@@ -1,0 +1,33 @@
+{
+  "name": "spec-up-migrate",
+  "version": "1.0.0",
+  "description": "A migration utility for Spec-Up specifications",
+  "main": "index.js",
+  "bin": {
+    "spec-up-migrate": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Build completed\"",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "spec-up",
+    "migration",
+    "cli",
+    "npx"
+  ],
+  "author": "",
+  "license": "MIT",
+  "preferGlobal": true,
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {
+    "commander": "^9.4.1",
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  }
+}

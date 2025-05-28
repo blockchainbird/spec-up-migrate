@@ -1,0 +1,17 @@
+{
+  "migration": {
+    "rules": [
+      {
+        "pattern": "spec_version:\\s*[\"']([0-9.]+)[\"']",
+        "replacement": "spec_version: \"2.0\"",
+        "description": "Update spec version to 2.0"
+      }
+    ],
+    "fileTypes": [".md", ".json", ".yaml", ".yml"],
+    "excludePatterns": ["node_modules/**", ".git/**"]
+  },
+  "validation": {
+    "required_fields": ["spec_version", "title"],
+    "supported_versions": ["1.0", "1.1", "2.0"]
+  }
+}
