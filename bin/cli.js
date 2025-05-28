@@ -333,9 +333,19 @@ program
       });
       
       console.log('');
-      console.log(chalk.green('🎉 Complete migration finished successfully!'));
-      console.log('');
-      console.log(chalk.blue('Migration Summary:'));
+      
+      if (!result.success) {
+        console.log(chalk.red('❌ Complete migration failed!'));
+        if (result.error) {
+          console.log(chalk.red('Error:'), result.error);
+        }
+        console.log('');
+        console.log(chalk.blue('Migration Summary:'));
+      } else {
+        console.log(chalk.green('🎉 Complete migration finished successfully!'));
+        console.log('');
+        console.log(chalk.blue('Migration Summary:'));
+      }
       
       // Find the detection phase result
       const detectionPhase = result.phases.find(phase => phase.name === 'Detection');
@@ -372,9 +382,18 @@ program
       }
       
       console.log('');
-      console.log(chalk.green('🚀 Your project is now ready for Spec-Up-T!'));
-      console.log(chalk.blue('Test your migration:'));
-      console.log(chalk.gray('  npx spec-up-t render'));
+      
+      if (result.success) {
+        console.log(chalk.green('🚀 Your project is now ready for Spec-Up-T!'));
+        console.log(chalk.blue('Test your migration:'));
+        console.log(chalk.gray('  npx spec-up-t render'));
+      } else {
+        console.log(chalk.yellow('Migration was not completed due to errors above.'));
+        console.log(chalk.blue('Next steps:'));
+        console.log(chalk.gray('  1. Review the error messages'));
+        console.log(chalk.gray('  2. Ensure the directory contains a valid Spec-Up project'));
+        console.log(chalk.gray('  3. Try running: spec-up-migrate detect --verbose'));
+      }
       
     } catch (error) {
       console.error(chalk.red('❌ Complete migration failed:'), error.message);
