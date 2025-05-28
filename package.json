@@ -17,7 +17,7 @@
     "cli",
     "npx"
   ],
-  "author": "",
+  "author": "WebOfTrust Community",
   "license": "MIT",
   "preferGlobal": true,
   "engines": {
@@ -29,5 +29,13 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WebOfTrust/spec-up-migrate.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WebOfTrust/spec-up-migrate/issues"
+  },
+  "homepage": "https://github.com/WebOfTrust/spec-up-migrate#readme"
 }

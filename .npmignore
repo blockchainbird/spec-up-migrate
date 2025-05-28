@@ -1,0 +1,43 @@
+# Test directories and artifacts
+test-migration-*/
+final-comprehensive-test/
+final-test/
+fresh-migration-test/
+mock-spec-up/
+test-cleanup/
+migrated/
+
+# Development files
+.history/
+*-backup.*
+*-backup.js
+*-backup.json
+.gitignore-backup
+
+# Documentation that shouldn't be published
+CLEANUP-SUMMARY.md
+FINAL-TEST-RESULTS.md
+MISSION-COMPLETE.md
+REFACTORING-SUMMARY.md
+test-migration-validation.js
+test-npx.sh
+test-spec.md
+config.json
+
+# Development artifacts
+lib/migrator-original.js
+lib/migrator-refactored.js
+prepare-package.sh
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+
+# IDE files
+.vscode/
+.idea/
+
+# These should NOT be excluded - remove from here
+# .git/
+# .gitignore
