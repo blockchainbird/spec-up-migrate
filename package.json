@@ -1,7 +1,7 @@
 {
   "name": "spec-up-migrate",
-  "version": "1.0.0",
-  "description": "A migration utility for Spec-Up specifications",
+  "version": "1.1.0",
+  "description": "A comprehensive migration tool for migrating Spec-Up projects to Spec-Up-T",
   "main": "index.js",
   "bin": {
     "spec-up-migrate": "./bin/cli.js"
