@@ -1,6 +1,6 @@
 # Spec-Up Migrate
 
-A command-line tool for migrating Spec-Up specifications to Spec-Up-T (the TypeScript rewrite). This tool provides a complete migration path from legacy Spec-Up installations to the modern Spec-Up-T framework.
+A command-line tool for migrating Spec-Up specifications to Spec-Up-T. This tool provides a complete migration path from legacy Spec-Up installations to the modern Spec-Up-T framework.
 
 ## Features
 
@@ -172,12 +172,19 @@ The backup process preserves these critical files:
 The cleanup process removes these obsolete files:
 
 - `assets/` directory (fonts, images, styles)
+- `custom-assets/` directory
+- `multi-file-test/` directory
+- `single-file-test/` directory
+- `src/` directory
+- `fonts/` directory
 - `docs/fonts/` directory
 - `gulpfile.js` (replaced by Spec-Up-T)
 - `index.js` (replaced by Spec-Up-T)
+- `references.js` (replaced by Spec-Up-T)
 - `.github/workflows/` (legacy CI/CD)
 - `node_modules/` (will be reinstalled)
 - `package-lock.json` (regenerated)
+- `specup_logo.png` (regenerated)
 
 ## Configuration Changes
 
