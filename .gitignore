@@ -96,3 +96,9 @@ lib/migrator-refactored.js
 # Documentation generated during testing
 docs/
 *.html
+
+# Test directories and debug files (development artifacts)
+test-temp/
+test-real-world/
+test-cli-integration.js
+test-*.js
