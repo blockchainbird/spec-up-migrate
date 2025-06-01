@@ -10,7 +10,8 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - 🔍 **Smart Detection**: Automatically detect Spec-Up installations with confidence scoring
 - 📦 **Safe Backup**: Create comprehensive backups before migration with timestamps
 - 🧹 **Clean Removal**: Remove obsolete files and legacy dependencies
-- ⚡ **Configuration Update**: Modernize specs.json and package.json for Spec-Up-T compatibility
+- ⚡ **Dynamic Configuration**: Fetch latest Spec-Up-T boilerplate from remote repository with fallback support
+- 🔄 **Intelligent Conversion**: Convert legacy external_specs format to modern Spec-Up-T structure
 - 🚀 **Complete Setup**: Install Spec-Up-T with proper project structure and terminology support
 - 🔄 **End-to-End Migration**: Fully automated migration workflow
 - ✅ **Validation**: Built-in validation to ensure migration success
@@ -68,7 +69,7 @@ npx spec-up-migrate complete --no-backup
 1. 🔍 Detects Spec-Up installation (95%+ confidence required)
 2. 📦 Creates timestamped backup of critical files
 3. 🧹 Removes obsolete files and legacy dependencies
-4. ⚡ Updates package.json and specs.json for Spec-Up-T
+4. ⚡ Updates package.json and specs.json for Spec-Up-T with dynamic boilerplate
 5. 🚀 Installs Spec-Up-T with complete project structure
 6. ✅ Validates migration success
 
@@ -193,6 +194,13 @@ The detection system uses a confidence-based approach:
   - .github/workflows/
   - Basic .gitignore patterns
 
+### Dynamic Boilerplate Fetching (v1.2.0)
+
+The migration tool dynamically fetches the latest Spec-Up-T boilerplate configuration from:
+- **Primary Source**: `https://raw.githubusercontent.com/blockchainbird/spec-up-t/refs/heads/master/src/install-from-boilerplate/boilerplate/specs.json`
+- **Fallback**: Built-in configuration matching the remote structure
+- **Benefits**: Always uses the latest Spec-Up-T standards and configuration options
+
 ### Files Backed Up
 
 The backup process preserves these critical files:
@@ -227,23 +235,61 @@ The cleanup process removes these obsolete files:
 
 ### specs.json Migration
 
-The tool automatically updates specs.json from version 1.0 to 2.0:
+The tool automatically updates specs.json and converts external_specs format:
 
 ```json
-// Before (v1.0)
+// Before (Legacy Spec-Up format)
 {
-  "spec_version": "1.0",
-  "title": "My Specification",
-  "specs": [...]
+  "specs": [
+    {
+      "title": "My Specification",
+      "spec_directory": "./spec",
+      "external_specs": [
+        {
+          "PE": "https://identity.foundation/presentation-exchange",
+          "test-1": "https://blockchainbird.github.io/spec-up-xref-test-1/"
+        }
+      ]
+    }
+  ]
 }
 
-// After (v2.0)
+// After (Modern Spec-Up-T format)
 {
-  "spec_version": "2.0", 
-  "title": "My Specification",
-  "specs": [...]
+  "specs": [
+    {
+      "title": "My Specification", 
+      "author": "Trust over IP Foundation",
+      "description": "Create technical specifications in markdown. Based on the original Spec-Up, extended with Terminology tooling",
+      "spec_directory": "./spec",
+      "spec_terms_directory": "terms-definitions",
+      "external_specs": [
+        {
+          "external_spec": "PE",
+          "gh_page": "https://identity.foundation/presentation-exchange",
+          "url": "https://identity.foundation/presentation-exchange",
+          "terms_dir": "spec/term-definitions"
+        },
+        {
+          "external_spec": "test-1", 
+          "gh_page": "https://blockchainbird.github.io/spec-up-xref-test-1/",
+          "url": "https://github.com/blockchainbird/spec-up-xref-test-1",
+          "terms_dir": "spec/term-definitions"
+        }
+      ],
+      "katex": false
+    }
+  ]
 }
 ```
+
+### Key Migration Features (v1.2.0)
+
+- **Dynamic Boilerplate**: Fetches latest configuration from remote repository
+- **Smart External Specs Conversion**: Converts key-value pairs to structured objects
+- **GitHub URL Detection**: Automatically converts GitHub Pages URLs to repository URLs
+- **Field Placement**: Ensures author/description are at spec level (not document root)
+- **Fallback Support**: Works offline with built-in configuration matching remote structure
 
 ### package.json Updates
 
@@ -316,7 +362,7 @@ npx spec-up-migrate complete
 
 # After migration, you'll have:
 my-spec-project/
-├── specs.json (updated for Spec-Up-T)
+├── specs.json (updated for Spec-Up-T with dynamic boilerplate)
 ├── package.json (spec-up-t dependency, new scripts)
 ├── spec/
 │   ├── intro.md
@@ -348,7 +394,25 @@ npx spec-up-migrate complete --dry-run
 npx spec-up-migrate complete
 ```
 
-### Example 3: Troubleshooting Failed Migration
+### Example 3: External Specs Conversion
+
+```bash
+# If your legacy specs.json has external_specs like this:
+# "external_specs": [{"PE": "https://identity.foundation/presentation-exchange"}]
+
+# After migration, it becomes:
+# "external_specs": [{
+#   "external_spec": "PE",
+#   "gh_page": "https://identity.foundation/presentation-exchange", 
+#   "url": "https://identity.foundation/presentation-exchange",
+#   "terms_dir": "spec/term-definitions"
+# }]
+
+# The migration automatically handles the conversion
+npx spec-up-migrate complete
+```
+
+### Example 4: Troubleshooting Failed Migration
 
 ```bash
 # If migration fails, check the specific phase:
@@ -367,6 +431,8 @@ npx spec-up-migrate install --dry-run
 After successful migration, your project gains these capabilities:
 
 ### ✅ New Features Available
+- **Dynamic Configuration**: Always uses latest Spec-Up-T standards via remote boilerplate
+- **Modern External Specs**: Structured external specification references with GitHub integration
 - **Terminology Management**: Structured terminology with cross-references
 - **Advanced Rendering**: Professional-grade HTML output
 - **PDF Generation**: `npm run topdf`
@@ -379,6 +445,7 @@ After successful migration, your project gains these capabilities:
 - **Asset management** with automated file handling
 - **Specification versioning** with automatic index generation
 - **External specs integration** for multi-repository projects
+- **Remote boilerplate sync** for always up-to-date configurations
 
 ## Examples
 
@@ -408,7 +475,7 @@ npx spec-up-migrate backup
 npx spec-up-migrate cleanup --dry-run
 npx spec-up-migrate cleanup
 
-# 4. Update configurations
+# 4. Update configurations (with dynamic boilerplate)
 npx spec-up-migrate update
 
 # 5. Install Spec-Up-T
@@ -467,11 +534,25 @@ spec-up-migrate detect -v
 ```
 spec-up-migrate/
 ├── bin/cli.js           # Command-line interface
-├── lib/migrator.js      # Core migration logic
+├── lib/
+│   ├── migrator.js      # Core migration logic
+│   └── updater.js       # Configuration updater with dynamic boilerplate
 ├── package.json         # NPX configuration
 ├── README.md           # Documentation
 └── mock-spec-up/       # Test environment
 ```
+
+## Version History
+
+### v1.2.0 (Latest)
+- ✨ **Dynamic Boilerplate Fetching**: Automatically fetches latest Spec-Up-T configuration from remote repository
+- 🔄 **Smart External Specs Conversion**: Converts legacy object format to modern array structure
+- 🎯 **Improved Field Placement**: Ensures author/description fields are correctly placed at spec level
+- 🛠️ **Enhanced Fallback Support**: Works offline with built-in configuration matching remote structure
+- 🧹 **Code Quality**: Removed unused configurations not present in official boilerplate
+
+### v1.1.0 
+- 🚀 Initial production release with complete migration workflow
 
 ## License
 
