@@ -386,7 +386,7 @@ program
       if (result.success) {
         console.log(chalk.green('🚀 Your project is now ready for Spec-Up-T!'));
         console.log(chalk.blue('Test your migration:'));
-        console.log(chalk.gray('  npx spec-up-t render'));
+        console.log(chalk.gray('  “npm run menu 7” and wait for the health check page to open'));
       } else {
         console.log(chalk.yellow('Migration was not completed due to errors above.'));
         console.log(chalk.blue('Next steps:'));
