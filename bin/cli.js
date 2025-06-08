@@ -8,6 +8,9 @@ const fs = require('fs');
 // Import the main functionality
 const { migrate, detect, backup, cleanup, updateConfigurations, install, completeMigration } = require('../lib/migrator');
 
+// Read version from package.json
+const packageJson = require('../package.json');
+
 /**
  * Format bytes as human-readable text
  * @param {number} bytes Number of bytes
@@ -39,7 +42,7 @@ function formatBytes(bytes, si = false, dp = 1) {
 program
   .name('spec-up-migrate')
   .description('CLI tool for migrating Spec-Up specifications')
-  .version('1.1.0');
+  .version(packageJson.version);
 
 // Migrate command
 program
