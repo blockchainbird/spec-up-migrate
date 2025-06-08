@@ -10,12 +10,20 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - 🔍 **Smart Detection**: Automatically detect Spec-Up installations with confidence scoring
 - 📦 **Safe Backup**: Create comprehensive backups before migration with timestamps
 - 🧹 **Clean Removal**: Remove obsolete files and legacy dependencies
-- ⚡ **Dynamic Configuration**: Fetch latest Spec-Up-T boilerplate from remote repository with fallback support
+- ⚡ **Dynamic Configuration**: Fetch latest Spec-Up-T configuration from official repository
 - 🔄 **Intelligent Conversion**: Convert legacy external_specs format to modern Spec-Up-T structure
 - 🚀 **Complete Setup**: Install Spec-Up-T with proper project structure and terminology support
 - 🔄 **End-to-End Migration**: Fully automated migration workflow
 - ✅ **Validation**: Built-in validation to ensure migration success
 - 🎯 **Professional Output**: Generate publication-ready HTML specifications
+
+## 🔧 Latest Updates
+
+- **✅ Fixed Configuration Source**: Now correctly fetches boilerplate from `blockchainbird/spec-up-t` repository
+- **✅ Dynamic Scripts**: Scripts configuration fetched from live repository for latest standards
+- **✅ Current Dependencies**: Uses Spec-Up-T v1.2.7 and current dependency versions
+- **✅ Improved Validation**: Built-in project validation ensures migration success
+- **✅ Better Error Handling**: Graceful fallbacks when remote fetching fails
 
 ## 🚀 Quick Start
 
@@ -154,6 +162,28 @@ npx spec-up-migrate install ./my-spec-project
 # Skip npm install (dependencies only)
 npx spec-up-migrate install --no-deps
 ```
+
+### ✅ Validation
+
+Validate that a project meets Spec-Up-T requirements:
+
+```bash
+# Validate current directory
+npx spec-up-migrate validate
+
+# Validate specific project
+npx spec-up-migrate validate ./my-migrated-project
+
+# Alternative: use npm script after migration
+npm run validate
+```
+
+**Validation Checks:**
+- ✅ Spec-Up-T dependency present
+- ✅ Required scripts (edit, render, dev)
+- ✅ Valid specs.json structure
+- ✅ Recommended directory structure
+- ✅ Configuration files (.env.example)
 
 ### Legacy Migrate Command
 
