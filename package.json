@@ -14,7 +14,9 @@
     "prepublishOnly": "npm run build",
     "migrate": "node bin/cli.js migrate",
     "validate:project": "node validate.js",
-    "validate": "npm test"
+    "validate": "npm test",
+    "docs": "jsdoc -c jsdoc.config.json",
+    "docs:watch": "jsdoc -c jsdoc.config.json --watch"
   },
   "keywords": [
     "spec-up",
@@ -34,7 +36,8 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "jsdoc": "^4.0.4"
   },
   "jest": {
     "testEnvironment": "node",
