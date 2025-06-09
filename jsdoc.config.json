@@ -1,0 +1,29 @@
+{
+  "source": {
+    "include": [
+      "./lib/",
+      "./bin/",
+      "./index.js",
+      "./validate.js"
+    ],
+    "includePattern": "\\.(js|jsx)$",
+    "exclude": [
+      "node_modules/",
+      "test/",
+      "coverage/",
+      "docs/"
+    ]
+  },
+  "opts": {
+    "destination": "./docs/",
+    "recurse": true,
+    "readme": "./README.md"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}
