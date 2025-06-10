@@ -27,6 +27,7 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - **✅ Better Error Handling**: Graceful fallbacks when remote fetching fails
 - **✂️ Glossary Splitter**: Integrated spec-up-splitter functionality for automatic glossary file splitting
 - **🔄 Enhanced Migration**: Splitting now included as final step in complete migration workflow
+- **🗑️ Automatic Cleanup**: Source glossary files are automatically removed from markdown_paths after successful splitting
 
 ## 🚀 Quick Start
 
@@ -82,8 +83,9 @@ npx spec-up-migrate complete --no-backup
 3. 🧹 Removes obsolete files and legacy dependencies
 4. ⚡ Updates package.json and specs.json for Spec-Up-T with dynamic boilerplate
 5. ✂️ Splits glossary file into individual term files (if applicable)
-6. 🚀 Installs Spec-Up-T with complete project structure
-7. ✅ Validates migration success
+6. 🗑️ Removes source glossary file from markdown_paths after splitting
+7. 🚀 Installs Spec-Up-T with complete project structure
+8. ✅ Validates migration success
 
 ### 🔍 Detection
 
@@ -216,6 +218,7 @@ npm run split
 3. 📁 Creates terms-definitions directory with organized term files
 4. 💾 Creates backup of original specs.json
 5. 🔧 Generates intro file with remaining content
+6. 🗑️ Removes source glossary file from markdown_paths automatically
 
 **Requirements:**
 - ✅ specs.json file with proper configuration
