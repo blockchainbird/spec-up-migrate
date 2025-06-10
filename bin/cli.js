@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+/**
+ * @fileoverview Command-line interface for Spec-Up to Spec-Up-T migration tool
+ * @module bin/cli
+ * @author Kor Dwarshuis
+ * @version 1.2.0
+ * @since 2024-06-10
+ */
+
 const { program } = require('commander');
 const chalk = require('chalk');
 const path = require('path');

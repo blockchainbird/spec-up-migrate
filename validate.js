@@ -1,12 +1,22 @@
 #!/usr/bin/env node
 
+/**
+ * @fileoverview Validation functionality for migrated Spec-Up-T projects
+ * @module validate
+ * @author Kor Dwarshuis
+ * @version 1.2.0
+ * @since 2024-06-10
+ */
+
 const fs = require('fs').promises;
 const path = require('path');
 
 /**
  * Check if a file exists
- * @param {string} filePath - Path to check
- * @returns {Promise<boolean>} - True if file exists
+ * @param {string} filePath - Path to check for existence
+ * @returns {Promise<boolean>} True if file exists, false otherwise
+ * @example
+ * const exists = await fileExists('./package.json');
  */
 async function fileExists(filePath) {
   try {
@@ -18,9 +28,11 @@ async function fileExists(filePath) {
 }
 
 /**
- * Safely parse JSON content
+ * Safely parse JSON content with fallback
  * @param {string} content - JSON string to parse
- * @returns {Object} - Parsed JSON or empty object
+ * @returns {Object} Parsed JSON object or empty object if parsing fails
+ * @example
+ * const config = safeJsonParse(fileContent);
  */
 function safeJsonParse(content) {
   try {
@@ -32,8 +44,17 @@ function safeJsonParse(content) {
 
 /**
  * Validate that a migrated project meets Spec-Up-T requirements
- * @param {string} projectPath - Path to the migrated project
- * @returns {Promise<Object>} - Validation result
+ * @param {string} projectPath - Path to the migrated project directory
+ * @returns {Promise<Object>} Validation result with status, errors, warnings, and checked files
+ * @throws {Error} When validation operations fail
+ * @example
+ * // Validate a migrated project
+ * const result = await validateMigratedProject('./my-migrated-project');
+ * if (result.valid) {
+ *   console.log('Project is valid!');
+ * } else {
+ *   console.log('Errors found:', result.errors);
+ * }
  */
 async function validateMigratedProject(projectPath) {
   const results = {
