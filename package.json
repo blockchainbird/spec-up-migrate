@@ -13,6 +13,7 @@
     "build": "echo \"Build completed\"",
     "prepublishOnly": "npm run build",
     "migrate": "node bin/cli.js migrate",
+    "split": "node bin/cli.js split",
     "validate:project": "node validate.js",
     "validate": "npm test",
     "docs": "jsdoc -c jsdoc.config.json",
