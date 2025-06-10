@@ -93,9 +93,6 @@ FINAL-TEST-RESULTS.md
 MISSION-COMPLETE.md
 lib/migrator-refactored.js
 
-# Documentation generated during testing
-docs/
-*.html
 
 # Test directories and debug files (development artifacts)
 test-temp/
