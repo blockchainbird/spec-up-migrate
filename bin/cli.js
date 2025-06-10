@@ -313,7 +313,7 @@ program
 // Complete migration command
 program
   .command('complete')
-  .description('Run complete migration process (detect, backup, cleanup, update, install)')
+  .description('Run complete migration process (detect, backup, cleanup, update, split, install)')
   .argument('[directory]', 'Directory to migrate', '.')
   .option('--dry-run', 'Show what would be done without making changes')
   .option('--no-backup', 'Skip backup phase (not recommended)')
@@ -378,20 +378,20 @@ program
         console.log(chalk.gray(`  Configuration files updated: ${updatePhase.result.summary.successful}`));
       }
       
-      // Find the installation phase result
-      const installPhase = result.phases.find(phase => phase.name === 'Installation');
-      if (installPhase && installPhase.result) {
-        console.log(chalk.gray(`  Spec-Up-T installed with dependencies`));
-      }
-      
       // Find the splitting phase result
       const splittingPhase = result.phases.find(phase => phase.name === 'Glossary Splitting');
       if (splittingPhase && splittingPhase.result) {
         if (splittingPhase.success) {
           console.log(chalk.gray(`  Glossary split into ${splittingPhase.result.filesCreated?.length || 0} term files`));
-        } else if (!splittingPhase.optional) {
+        } else if (splittingPhase.optional) {
           console.log(chalk.gray(`  Glossary splitting failed (optional step)`));
         }
+      }
+      
+      // Find the installation phase result
+      const installPhase = result.phases.find(phase => phase.name === 'Installation');
+      if (installPhase && installPhase.result) {
+        console.log(chalk.gray(`  Spec-Up-T installed with dependencies`));
       }
       
       console.log('');
