@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lib/backup.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lib/backup.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Backup functionality for critical files before Spec-Up migration
+ * @module lib/backup
+ * @author Kor Dwarshuis
+ * @version 1.2.0
+ * @since 2024-06-10
+ */
+
+const fs = require('fs').promises;
+const path = require('path');
+
+/**
+ * Create backups of critical files before migration
+ * @param {string} [directory='.'] - Directory path containing Spec-Up installation
+ * @param {Object} [options={}] - Backup options
+ * @param {boolean} [options.list=false] - Whether to only list files without backing up
+ * @returns {Promise&lt;Object>} Backup result with file statuses and summary
+ * @throws {Error} When backup operations fail
+ * @example
+ * // Basic backup
+ * const result = await backup('./my-project');
+ * 
+ * // List files that would be backed up
+ * const listResult = await backup('./my-project', { list: true });
+ */
+async function backup(directory = '.', options = {}) {
+  const absoluteDir = path.resolve(directory);
+  const { list = false } = options;
+  
+  // Define critical files to backup
+  const criticalFiles = [
+    {
+      source: 'assets',
+      backup: 'assets-backup'
+    },
+    {
+      source: 'custom-assets',
+      backup: 'custom-assets-backup'
+    },
+    {
+      source: 'multi-file-test',
+      backup: 'multi-file-test-backup'
+    },
+    {
+      source: 'single-file-test',
+      backup: 'single-file-test-backup'
+    },
+    {
+      source: 'specs.json',
+      backup: 'specs-backup.json'
+    },
+    {
+      source: 'package.json', 
+      backup: 'package-backup.json'
+    },
+    {
+      source: '.gitignore',
+      backup: '.gitignore-backup'
+    }
+  ];
+
+  const results = [];
+
+  for (const file of criticalFiles) {
+    const sourcePath = path.join(absoluteDir, file.source);
+    const backupPath = path.join(absoluteDir, file.backup);
+    
+    try {
+      // Check if source file exists
+      await fs.access(sourcePath);
+      
+      const fileResult = {
+        source: file.source,
+        backup: file.backup,
+        sourcePath,
+        backupPath,
+        exists: true,
+        backed_up: false
+      };
+
+      if (!list) {
+        try {
+          // Check if source is a directory or file and backup accordingly
+          const stats = await fs.stat(sourcePath);
+          
+          if (stats.isDirectory()) {
+            // For directories, use recursive copy
+            await fs.cp(sourcePath, backupPath, { recursive: true });
+          } else {
+            // For files, use copyFile
+            await fs.copyFile(sourcePath, backupPath);
+          }
+          
+          fileResult.backed_up = true;
+        } catch (backupError) {
+          fileResult.backed_up = false;
+          fileResult.error = backupError.message;
+        }
+      }
+      
+      results.push(fileResult);
+      
+    } catch (error) {
+      // File doesn't exist
+      results.push({
+        source: file.source,
+        backup: file.backup,
+        sourcePath,
+        backupPath,
+        exists: false,
+        backed_up: false
+      });
+    }
+  }
+
+  return {
+    directory: absoluteDir,
+    files: results,
+    summary: {
+      total: results.length,
+      existing: results.filter(f => f.exists).length,
+      backed_up: results.filter(f => f.backed_up).length
+    }
+  };
+}
+
+module.exports = {
+  backup
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Jun 10 2025 18:11:09 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lib/detector.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lib/detector.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Spec-Up installation detection functionality with confidence scoring
+ * @module lib/detector
+ * @author Kor Dwarshuis
+ * @version 1.2.0
+ * @since 2024-06-10
+ */
+
+const fs = require('fs').promises;
+const path = require('path');
+const { fileExists, safeJsonParse } = require('./utils');
+
+/**
+ * Detect if a directory contains a Spec-Up installation
+ * @param {string} directory - Directory path to analyze
+ * @returns {Object} - Detection result with confidence and recommendations
+ */
+async function detect(directory = '.') {
+  const absoluteDir = path.resolve(directory);
+  const checks = [];
+  let confidence = 0;
+  const recommendations = [];
+
+  // Check for specs.json
+  const specsJsonCheck = await checkSpecsJson(absoluteDir);
+  checks.push(specsJsonCheck);
+  if (specsJsonCheck.found) confidence += 40;
+
+  // Check for package.json with spec-up dependencies
+  const packageJsonCheck = await checkPackageJson(absoluteDir);
+  checks.push(packageJsonCheck);
+  if (packageJsonCheck.found) confidence += 30;
+
+  // Check for index.js with spec-up patterns
+  const indexJsCheck = await checkIndexJs(absoluteDir);
+  checks.push(indexJsCheck);
+  if (indexJsCheck.found) confidence += 20;
+
+  // Check for additional indicators
+  const additionalChecks = await checkAdditionalIndicators(absoluteDir);
+  checks.push(...additionalChecks);
+  confidence += additionalChecks.filter(check => check.found).length * 2.5;
+
+  // Generate verdict and recommendations
+  let verdict;
+  if (confidence >= 80) {
+    verdict = 'Strong Spec-Up installation detected';
+  } else if (confidence >= 50) {
+    verdict = 'Possible Spec-Up installation';
+    if (!specsJsonCheck.found) recommendations.push('Create or verify specs.json configuration');
+    if (!packageJsonCheck.found) recommendations.push('Check package.json for spec-up dependencies');
+    if (!indexJsCheck.found) recommendations.push('Verify index.js contains spec-up initialization');
+  } else {
+    verdict = 'Not a Spec-Up installation';
+    recommendations.push('Initialize a new Spec-Up project first');
+  }
+
+  return {
+    directory: absoluteDir,
+    confidence: Math.min(100, confidence),
+    verdict,
+    checks,
+    recommendations
+  };
+}
+
+/**
+ * Check for specs.json file and validate its structure
+ * @param {string} directory - Directory path to check for specs.json
+ * @returns {Promise&lt;Object>} Check result with found/valid status and details
+ */
+async function checkSpecsJson(directory) {
+  const specsPath = path.join(directory, 'specs.json');
+  
+  try {
+    const content = await fs.readFile(specsPath, 'utf8');
+    const data = safeJsonParse(content);
+    
+    const hasSpecs = Array.isArray(data.specs) &amp;&amp; data.specs.length > 0;
+    
+    return {
+      name: 'specs.json',
+      found: true,
+      valid: hasSpecs,
+      path: specsPath,
+      details: hasSpecs ? `Found ${data.specs.length} spec(s)` : 'Empty or invalid specs array'
+    };
+  } catch (error) {
+    return {
+      name: 'specs.json',
+      found: false,
+      valid: false,
+      path: specsPath,
+      details: 'File not found'
+    };
+  }
+}
+
+/**
+ * Check for package.json with spec-up dependencies
+ * @param {string} directory - Directory path to check for package.json
+ * @returns {Promise&lt;Object>} Check result with found/valid status and dependency details
+ */
+async function checkPackageJson(directory) {
+  const packagePath = path.join(directory, 'package.json');
+  
+  try {
+    const content = await fs.readFile(packagePath, 'utf8');
+    const data = safeJsonParse(content);
+    
+    const hasSpecUp = (data.dependencies &amp;&amp; data.dependencies['spec-up']) ||
+                      (data.devDependencies &amp;&amp; data.devDependencies['spec-up']);
+    
+    return {
+      name: 'package.json',
+      found: true,
+      valid: hasSpecUp,
+      path: packagePath,
+      details: hasSpecUp ? 'Contains spec-up dependency' : 'No spec-up dependency found'
+    };
+  } catch (error) {
+    return {
+      name: 'package.json',
+      found: false,
+      valid: false,
+      path: packagePath,
+      details: 'File not found'
+    };
+  }
+}
+
+/**
+ * Check for index.js with spec-up patterns
+ * @param {string} directory - Directory path to check for index.js
+ * @returns {Promise&lt;Object>} Check result with found/valid status and pattern details
+ */
+async function checkIndexJs(directory) {
+  const indexPath = path.join(directory, 'index.js');
+  
+  try {
+    const content = await fs.readFile(indexPath, 'utf8');
+    const hasSpecUpPatterns = content.includes('spec-up') || content.includes('SpecUp');
+    
+    return {
+      name: 'index.js',
+      found: true,
+      valid: hasSpecUpPatterns,
+      path: indexPath,
+      details: hasSpecUpPatterns ? 'Contains spec-up patterns' : 'No spec-up patterns found'
+    };
+  } catch (error) {
+    return {
+      name: 'index.js',
+      found: false,
+      valid: false,
+      path: indexPath,
+      details: 'File not found'
+    };
+  }
+}
+
+/**
+ * Check for additional Spec-Up indicators
+ * @param {string} directory - Directory path to check for additional indicators
+ * @returns {Promise&lt;Array&lt;Object>>} Array of check results for additional indicators
+ */
+async function checkAdditionalIndicators(directory) {
+  const indicators = [
+    { file: 'gulpfile.js', description: 'Gulp build configuration' },
+    { file: 'assets', description: 'Assets directory' },
+    { file: 'docs', description: 'Documentation output' },
+    { file: '.gitignore', description: 'Git ignore file' }
+  ];
+
+  const results = [];
+
+  for (const indicator of indicators) {
+    const indicatorPath = path.join(directory, indicator.file);
+    const exists = await fileExists(indicatorPath);
+    
+    results.push({
+      name: indicator.file,
+      found: exists,
+      valid: exists,
+      path: indicatorPath,
+      details: exists ? indicator.description : 'Not found'
+    });
+  }
+
+  return results;
+}
+
+module.exports = {
+  detect,
+  checkSpecsJson,
+  checkPackageJson,
+  checkIndexJs,
+  checkAdditionalIndicators
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Jun 10 2025 18:11:09 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

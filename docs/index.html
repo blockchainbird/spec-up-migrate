@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Spec-Up Migrate</h1>
+<p><a href="https://www.npmjs.com/package/spec-up-migrate"><img src="https://badge.fury.io/js/spec-up-migrate.svg" alt="npm version"></a>
+<a href="https://npmjs.org/package/spec-up-migrate"><img src="https://img.shields.io/npm/dm/spec-up-migrate.svg?style=flat" alt="NPM Downloads"></a></p>
+<p>A production-ready command-line tool for migrating Spec-Up specifications to Spec-Up-T. This tool provides enterprise-grade automation for transforming legacy Spec-Up projects to the modern Spec-Up-T framework with 95%+ detection confidence and professional HTML output generation.</p>
+<h2>✨ Features</h2>
+<ul>
+<li>🔍 <strong>Smart Detection</strong>: Automatically detect Spec-Up installations with confidence scoring</li>
+<li>📦 <strong>Safe Backup</strong>: Create comprehensive backups before migration with timestamps</li>
+<li>🧹 <strong>Clean Removal</strong>: Remove obsolete files and legacy dependencies</li>
+<li>⚡ <strong>Dynamic Configuration</strong>: Fetch latest Spec-Up-T configuration from official repository</li>
+<li>🔄 <strong>Intelligent Conversion</strong>: Convert legacy external_specs format to modern Spec-Up-T structure</li>
+<li>🚀 <strong>Complete Setup</strong>: Install Spec-Up-T with proper project structure and terminology support</li>
+<li>✂️ <strong>Glossary Splitting</strong>: Split glossary files into individual term definition files for better organization</li>
+<li>🔄 <strong>End-to-End Migration</strong>: Fully automated migration workflow including glossary splitting</li>
+<li>✅ <strong>Validation</strong>: Built-in validation to ensure migration success</li>
+<li>🎯 <strong>Professional Output</strong>: Generate publication-ready HTML specifications</li>
+</ul>
+<h2>🔧 Latest Updates</h2>
+<ul>
+<li><strong>✅ Fixed Configuration Source</strong>: Now correctly fetches boilerplate from <code>blockchainbird/spec-up-t</code> repository</li>
+<li><strong>✅ Dynamic Scripts</strong>: Scripts configuration fetched from live repository for latest standards</li>
+<li><strong>✅ Current Dependencies</strong>: Uses Spec-Up-T v1.2.7 and current dependency versions</li>
+<li><strong>✅ Improved Validation</strong>: Built-in project validation ensures migration success</li>
+<li><strong>✅ Better Error Handling</strong>: Graceful fallbacks when remote fetching fails</li>
+<li><strong>✂️ Glossary Splitter</strong>: Integrated spec-up-splitter functionality for automatic glossary file splitting</li>
+<li><strong>🔄 Enhanced Migration</strong>: Splitting now included as final step in complete migration workflow</li>
+</ul>
+<h2>🚀 Quick Start</h2>
+<p>Run the migration tool directly with npx (recommended):</p>
+<pre class="prettyprint source lang-bash"><code># Navigate to your Spec-Up project directory
+cd /path/to/your/spec-up-project
+
+# Run complete migration
+npx spec-up-migrate complete
+
+# Test the migrated project
+npm run render
+</code></pre>
+<h2>📦 Installation Options</h2>
+<h3>Option 1: Use with npx (Recommended)</h3>
+<pre class="prettyprint source lang-bash"><code>npx spec-up-migrate &lt;command> [options]
+</code></pre>
+<h3>Option 2: Global Installation</h3>
+<pre class="prettyprint source lang-bash"><code>npm install -g spec-up-migrate
+spec-up-migrate &lt;command> [options]
+</code></pre>
+<h2>📋 Commands</h2>
+<h3>🔄 Complete Migration (Recommended)</h3>
+<p>Perform a full migration from Spec-Up to Spec-Up-T in one command:</p>
+<pre class="prettyprint source lang-bash"><code># Complete migration with all phases
+npx spec-up-migrate complete
+
+# Migrate specific directory
+npx spec-up-migrate complete ./my-spec-project
+
+# Dry run to see what would be done (safe preview)
+npx spec-up-migrate complete --dry-run
+
+# Skip backup phase (not recommended)
+npx spec-up-migrate complete --no-backup
+</code></pre>
+<p><strong>What this does:</strong></p>
+<ol>
+<li>🔍 Detects Spec-Up installation (95%+ confidence required)</li>
+<li>📦 Creates timestamped backup of critical files</li>
+<li>🧹 Removes obsolete files and legacy dependencies</li>
+<li>⚡ Updates package.json and specs.json for Spec-Up-T with dynamic boilerplate</li>
+<li>✂️ Splits glossary file into individual term files (if applicable)</li>
+<li>🚀 Installs Spec-Up-T with complete project structure</li>
+<li>✅ Validates migration success</li>
+</ol>
+<h3>🔍 Detection</h3>
+<p>Analyze your project to determine if it's a valid Spec-Up installation:</p>
+<pre class="prettyprint source lang-bash"><code># Detect in current directory
+npx spec-up-migrate detect
+
+# Detect in specific directory  
+npx spec-up-migrate detect ./my-spec-project
+
+# Verbose output with detailed analysis
+npx spec-up-migrate detect --verbose
+</code></pre>
+<p><strong>Detection Criteria:</strong></p>
+<ul>
+<li>✅ specs.json configuration file</li>
+<li>✅ spec-up dependency in package.json</li>
+<li>✅ Typical Spec-Up project structure</li>
+<li>✅ Markdown files in spec directory</li>
+<li>✅ Index.js or gulpfile.js</li>
+</ul>
+<h3>📦 Backup</h3>
+<p>Create backups of critical files before migration:</p>
+<pre class="prettyprint source lang-bash"><code># Backup current directory
+npx spec-up-migrate backup
+
+# Backup specific directory
+npx spec-up-migrate backup ./my-spec-project
+
+# Custom backup location
+npx spec-up-migrate backup -o ./backups
+</code></pre>
+<h3>🧹 Cleanup</h3>
+<p>Remove obsolete Spec-Up files and dependencies:</p>
+<pre class="prettyprint source lang-bash"><code># Cleanup current directory
+npx spec-up-migrate cleanup
+
+# Dry run to see what would be removed
+npx spec-up-migrate cleanup --dry-run
+
+# Force removal without confirmation
+npx spec-up-migrate cleanup --force
+</code></pre>
+<h3>⚡ Update Configuration</h3>
+<p>Update specs.json and package.json for Spec-Up-T:</p>
+<pre class="prettyprint source lang-bash"><code># Update configuration files
+npx spec-up-migrate update
+
+# Update in specific directory
+npx spec-up-migrate update ./my-spec-project
+
+# Dry run to preview changes
+npx spec-up-migrate update --dry-run
+</code></pre>
+<h3>🚀 Install Spec-Up-T</h3>
+<p>Install Spec-Up-T and set up project structure:</p>
+<pre class="prettyprint source lang-bash"><code># Install Spec-Up-T
+npx spec-up-migrate install
+
+# Install in specific directory
+npx spec-up-migrate install ./my-spec-project
+
+# Skip npm install (dependencies only)
+npx spec-up-migrate install --no-deps
+</code></pre>
+<h3>✅ Validation</h3>
+<p>Validate that a project meets Spec-Up-T requirements:</p>
+<pre class="prettyprint source lang-bash"><code># Validate current directory
+npx spec-up-migrate validate
+
+# Validate specific project
+npx spec-up-migrate validate ./my-migrated-project
+
+# Alternative: use npm script after migration
+npm run validate
+</code></pre>
+<p><strong>Validation Checks:</strong></p>
+<ul>
+<li>✅ Spec-Up-T dependency present</li>
+<li>✅ Required scripts (edit, render, dev)</li>
+<li>✅ Valid specs.json structure</li>
+<li>✅ Recommended directory structure</li>
+<li>✅ Configuration files (.env.example)</li>
+</ul>
+<h3>✂️ Split Glossary</h3>
+<p>Split a glossary file into individual term definition files (useful for Spec-Up-T terminology management):</p>
+<pre class="prettyprint source lang-bash"><code># Split glossary in current directory
+npx spec-up-migrate split
+
+# Split glossary in specific directory
+npx spec-up-migrate split ./my-spec-project
+
+# Dry run to see what would be created
+npx spec-up-migrate split --dry-run
+
+# Verbose output with detailed information
+npx spec-up-migrate split --verbose
+
+# Alternative: use npm script after integration
+npm run split
+</code></pre>
+<p><strong>What this does:</strong></p>
+<ol>
+<li>📖 Reads glossary file specified in specs.json</li>
+<li>✂️ Splits terms marked with <code>[[def: ]]</code> into individual files</li>
+<li>📁 Creates terms-definitions directory with organized term files</li>
+<li>💾 Creates backup of original specs.json</li>
+<li>🔧 Generates intro file with remaining content</li>
+</ol>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>✅ specs.json file with proper configuration</li>
+<li>✅ Glossary file exists (first item in markdown_paths)</li>
+<li>✅ Clean terms-definitions directory (no existing .md files)</li>
+</ul>
+<h3>Legacy Migrate Command</h3>
+<p>Migrate individual specification files:</p>
+<pre class="prettyprint source lang-bash"><code># Migrate a single file
+npx spec-up-migrate migrate ./spec.md
+
+# Migrate with custom output directory
+npx spec-up-migrate migrate ./spec.md -o ./output
+
+# Dry run to preview changes
+npx spec-up-migrate migrate ./spec.md --dry-run
+</code></pre>
+<h2>Migration Process</h2>
+<p>The migration from Spec-Up to Spec-Up-T involves several phases:</p>
+<ol>
+<li><strong>Detection</strong> - Analyze the project to confirm it's a Spec-Up installation</li>
+<li><strong>Backup</strong> - Create backups of critical files</li>
+<li><strong>Cleanup</strong> - Remove obsolete Spec-Up files and dependencies</li>
+<li><strong>Update</strong> - Modernize configuration files (specs.json v1.0 → v2.0, package.json)</li>
+<li><strong>Install</strong> - Install Spec-Up-T and create new project structure</li>
+</ol>
+<h3>Detection Scoring</h3>
+<p>The detection system uses a confidence-based approach:</p>
+<ul>
+<li><strong>specs.json file</strong>: 40% confidence</li>
+<li><strong>package.json with spec-up dependency</strong>: 30% confidence</li>
+<li><strong>index.js gulpfile</strong>: 20% confidence</li>
+<li><strong>Additional indicators</strong> (2.5% each):
+<ul>
+<li>gulpfile.js</li>
+<li>assets/ directory</li>
+<li>docs/ directory</li>
+<li>.github/workflows/</li>
+<li>Basic .gitignore patterns</li>
+</ul>
+</li>
+</ul>
+<h3>Dynamic Boilerplate Fetching (v1.2.0)</h3>
+<p>The migration tool dynamically fetches the latest Spec-Up-T boilerplate configuration from:</p>
+<ul>
+<li><strong>Primary Source</strong>: <code>https://raw.githubusercontent.com/blockchainbird/spec-up-t/refs/heads/master/src/install-from-boilerplate/boilerplate/specs.json</code></li>
+<li><strong>Fallback</strong>: Built-in configuration matching the remote structure</li>
+<li><strong>Benefits</strong>: Always uses the latest Spec-Up-T standards and configuration options</li>
+</ul>
+<h3>Files Backed Up</h3>
+<p>The backup process preserves these critical files:</p>
+<ul>
+<li><code>specs.json</code> - Main specification configuration</li>
+<li><code>package.json</code> - Project dependencies and scripts</li>
+<li><code>index.js</code> - Legacy gulpfile</li>
+<li><code>gulpfile.js</code> - Build configuration</li>
+<li><code>.gitignore</code> - Git ignore patterns</li>
+<li><code>README.md</code> - Project documentation</li>
+</ul>
+<h3>Files Cleaned Up</h3>
+<p>The cleanup process removes these obsolete files:</p>
+<ul>
+<li><code>assets/</code> directory (fonts, images, styles)</li>
+<li><code>custom-assets/</code> directory</li>
+<li><code>multi-file-test/</code> directory</li>
+<li><code>single-file-test/</code> directory</li>
+<li><code>src/</code> directory</li>
+<li><code>fonts/</code> directory</li>
+<li><code>docs/fonts/</code> directory</li>
+<li><code>gulpfile.js</code> (replaced by Spec-Up-T)</li>
+<li><code>index.js</code> (replaced by Spec-Up-T)</li>
+<li><code>references.js</code> (replaced by Spec-Up-T)</li>
+<li><code>.github/workflows/</code> (legacy CI/CD)</li>
+<li><code>node_modules/</code> (will be reinstalled)</li>
+<li><code>package-lock.json</code> (regenerated)</li>
+<li><code>specup_logo.png</code> (regenerated)</li>
+</ul>
+<h2>Configuration Changes</h2>
+<h3>specs.json Migration</h3>
+<p>The tool automatically updates specs.json and converts external_specs format:</p>
+<pre class="prettyprint source lang-json"><code>// Before (Legacy Spec-Up format)
+{
+  &quot;specs&quot;: [
+    {
+      &quot;title&quot;: &quot;My Specification&quot;,
+      &quot;spec_directory&quot;: &quot;./spec&quot;,
+      &quot;external_specs&quot;: [
+        {
+          &quot;PE&quot;: &quot;https://identity.foundation/presentation-exchange&quot;,
+          &quot;test-1&quot;: &quot;https://blockchainbird.github.io/spec-up-xref-test-1/&quot;
+        }
+      ]
+    }
+  ]
+}
+
+// After (Modern Spec-Up-T format)
+{
+  &quot;specs&quot;: [
+    {
+      &quot;title&quot;: &quot;My Specification&quot;, 
+      &quot;author&quot;: &quot;Trust over IP Foundation&quot;,
+      &quot;description&quot;: &quot;Create technical specifications in markdown. Based on the original Spec-Up, extended with Terminology tooling&quot;,
+      &quot;spec_directory&quot;: &quot;./spec&quot;,
+      &quot;spec_terms_directory&quot;: &quot;terms-definitions&quot;,
+      &quot;external_specs&quot;: [
+        {
+          &quot;external_spec&quot;: &quot;PE&quot;,
+          &quot;gh_page&quot;: &quot;https://identity.foundation/presentation-exchange&quot;,
+          &quot;url&quot;: &quot;https://identity.foundation/presentation-exchange&quot;,
+          &quot;terms_dir&quot;: &quot;spec/term-definitions&quot;
+        },
+        {
+          &quot;external_spec&quot;: &quot;test-1&quot;, 
+          &quot;gh_page&quot;: &quot;https://blockchainbird.github.io/spec-up-xref-test-1/&quot;,
+          &quot;url&quot;: &quot;https://github.com/blockchainbird/spec-up-xref-test-1&quot;,
+          &quot;terms_dir&quot;: &quot;spec/term-definitions&quot;
+        }
+      ],
+      &quot;katex&quot;: false
+    }
+  ]
+}
+</code></pre>
+<h3>Key Migration Features (v1.2.0)</h3>
+<ul>
+<li><strong>Dynamic Boilerplate</strong>: Fetches latest configuration from remote repository</li>
+<li><strong>Smart External Specs Conversion</strong>: Converts key-value pairs to structured objects</li>
+<li><strong>GitHub URL Detection</strong>: Automatically converts GitHub Pages URLs to repository URLs</li>
+<li><strong>Field Placement</strong>: Ensures author/description are at spec level (not document root)</li>
+<li><strong>Fallback Support</strong>: Works offline with built-in configuration matching remote structure</li>
+</ul>
+<h3>package.json Updates</h3>
+<p>Updates package.json for Spec-Up-T compatibility:</p>
+<ul>
+<li>Removes <code>spec-up</code> dependency</li>
+<li>Adds <code>spec-up-t</code> dependency</li>
+<li>Updates scripts for new CLI commands</li>
+<li>Modernizes to latest package.json standards</li>
+</ul>
+<h3>New Project Structure</h3>
+<p>Creates Spec-Up-T project structure:</p>
+<pre class="prettyprint source"><code>project/
+├── .specup-t.yml          # Spec-Up-T configuration
+├── terminology/           # Term definitions directory
+│   └── .gitkeep
+├── specs.json            # Updated specification config
+├── package.json          # Updated dependencies
+└── [your markdown files] # Existing specs preserved
+</code></pre>
+<h2>Options Reference</h2>
+<h3>Global Options</h3>
+<ul>
+<li><code>--version</code> - Show version number</li>
+<li><code>--help</code> - Show help information</li>
+<li><code>--dry-run</code> - Preview changes without executing</li>
+<li><code>--verbose, -v</code> - Detailed output</li>
+</ul>
+<h3>Command-Specific Options</h3>
+<h4>complete</h4>
+<ul>
+<li><code>--no-backup</code> - Skip backup phase (not recommended)</li>
+<li><code>--dry-run</code> - Show what would be done</li>
+</ul>
+<h4>backup</h4>
+<ul>
+<li><code>-o, --output &lt;path&gt;</code> - Custom backup directory</li>
+</ul>
+<h4>cleanup</h4>
+<ul>
+<li><code>--force</code> - Skip confirmation prompts</li>
+<li><code>--dry-run</code> - Show what would be removed</li>
+</ul>
+<h4>detect</h4>
+<ul>
+<li><code>-v, --verbose</code> - Detailed analysis output</li>
+</ul>
+<h4>install</h4>
+<ul>
+<li><code>--no-deps</code> - Skip npm dependency installation</li>
+</ul>
+<h2>🎯 Real-World Examples</h2>
+<h3>Example 1: Basic Migration</h3>
+<pre class="prettyprint source lang-bash"><code># You have a Spec-Up project like this:
+my-spec-project/
+├── specs.json
+├── package.json (with spec-up dependency)
+├── spec/
+│   ├── intro.md
+│   └── main.md
+└── docs/ (generated output)
+
+# Run the migration:
+cd my-spec-project
+npx spec-up-migrate complete
+
+# After migration, you'll have:
+my-spec-project/
+├── specs.json (updated for Spec-Up-T with dynamic boilerplate)
+├── package.json (spec-up-t dependency, new scripts)
+├── spec/
+│   ├── intro.md
+│   ├── main.md
+│   └── terms-and-definitions-intro.md (added)
+├── terminology/ (new structure)
+│   ├── actors/
+│   ├── artifacts/ 
+│   ├── concepts/
+│   └── processes/
+├── assets/ (new)
+└── backup-2025-05-28/ (safety backup)
+
+# Test your migrated project:
+npm run render  # Generate HTML specification
+npm run dev     # Development mode with live reload
+</code></pre>
+<h3>Example 2: Migration with Preview</h3>
+<pre class="prettyprint source lang-bash"><code># First, check if your project is compatible:
+npx spec-up-migrate detect --verbose
+
+# Preview what the migration would do:
+npx spec-up-migrate complete --dry-run
+
+# If satisfied, run the actual migration:
+npx spec-up-migrate complete
+</code></pre>
+<h3>Example 3: External Specs Conversion</h3>
+<pre class="prettyprint source lang-bash"><code># If your legacy specs.json has external_specs like this:
+# &quot;external_specs&quot;: [{&quot;PE&quot;: &quot;https://identity.foundation/presentation-exchange&quot;}]
+
+# After migration, it becomes:
+# &quot;external_specs&quot;: [{
+#   &quot;external_spec&quot;: &quot;PE&quot;,
+#   &quot;gh_page&quot;: &quot;https://identity.foundation/presentation-exchange&quot;, 
+#   &quot;url&quot;: &quot;https://identity.foundation/presentation-exchange&quot;,
+#   &quot;terms_dir&quot;: &quot;spec/term-definitions&quot;
+# }]
+
+# The migration automatically handles the conversion
+npx spec-up-migrate complete
+</code></pre>
+<h3>Example 4: Troubleshooting Failed Migration</h3>
+<pre class="prettyprint source lang-bash"><code># If migration fails, check the specific phase:
+npx spec-up-migrate detect
+# Look for confidence level - should be >80%
+
+# Try individual phases:
+npx spec-up-migrate backup
+npx spec-up-migrate cleanup --dry-run
+npx spec-up-migrate update --dry-run
+npx spec-up-migrate install --dry-run
+</code></pre>
+<h2>📊 Migration Results</h2>
+<p>After successful migration, your project gains these capabilities:</p>
+<h3>✅ New Features Available</h3>
+<ul>
+<li><strong>Dynamic Configuration</strong>: Always uses latest Spec-Up-T standards via remote boilerplate</li>
+<li><strong>Modern External Specs</strong>: Structured external specification references with GitHub integration</li>
+<li><strong>Terminology Management</strong>: Structured terminology with cross-references</li>
+<li><strong>Advanced Rendering</strong>: Professional-grade HTML output</li>
+<li><strong>PDF Generation</strong>: <code>npm run topdf</code></li>
+<li><strong>Development Mode</strong>: Live reload with <code>npm run dev</code></li>
+<li><strong>Health Checking</strong>: Project validation with <code>npm run healthCheck</code></li>
+<li><strong>External References</strong>: Automatic reference collection and caching</li>
+</ul>
+<h3>✅ Modern Tooling</h3>
+<ul>
+<li><strong>12+ npm scripts</strong> for complete workflow management</li>
+<li><strong>Asset management</strong> with automated file handling</li>
+<li><strong>Specification versioning</strong> with automatic index generation</li>
+<li><strong>External specs integration</strong> for multi-repository projects</li>
+<li><strong>Remote boilerplate sync</strong> for always up-to-date configurations</li>
+</ul>
+<h2>Examples</h2>
+<h3>Basic Migration</h3>
+<pre class="prettyprint source lang-bash"><code># Navigate to your Spec-Up project
+cd my-spec-project
+
+# Run complete migration
+npx spec-up-migrate complete
+
+# Verify the migration
+npx spec-up-t render
+</code></pre>
+<h3>Step-by-Step Migration</h3>
+<pre class="prettyprint source lang-bash"><code># 1. Detect and analyze
+npx spec-up-migrate detect -v
+
+# 2. Create backup
+npx spec-up-migrate backup
+
+# 3. Clean obsolete files
+npx spec-up-migrate cleanup --dry-run
+npx spec-up-migrate cleanup
+
+# 4. Update configurations (with dynamic boilerplate)
+npx spec-up-migrate update
+
+# 5. Install Spec-Up-T
+npx spec-up-migrate install
+</code></pre>
+<h3>Troubleshooting</h3>
+<p>If migration fails:</p>
+<pre class="prettyprint source lang-bash"><code># Check what was detected
+npx spec-up-migrate detect -v
+
+# Restore from backup if needed
+cp -r ./backup-[timestamp]/* ./
+
+# Try individual phases
+npx spec-up-migrate cleanup --dry-run
+npx spec-up-migrate update --dry-run
+</code></pre>
+<h2>Development</h2>
+<h3>Setup</h3>
+<pre class="prettyprint source lang-bash"><code># Clone the repository
+git clone &lt;repository-url>
+cd spec-up-migrate
+
+# Install dependencies  
+npm install
+
+# Make CLI executable
+chmod +x bin/cli.js
+</code></pre>
+<h3>Testing</h3>
+<pre class="prettyprint source lang-bash"><code># Link for local testing
+npm link
+
+# Test commands
+spec-up-migrate detect
+spec-up-migrate --help
+
+# Test with mock data
+cd mock-spec-up
+spec-up-migrate detect -v
+</code></pre>
+<h3>Project Structure</h3>
+<pre class="prettyprint source"><code>spec-up-migrate/
+├── bin/cli.js           # Command-line interface
+├── lib/
+│   ├── migrator.js      # Core migration logic
+│   └── updater.js       # Configuration updater with dynamic boilerplate
+├── package.json         # NPX configuration
+├── README.md           # Documentation
+└── mock-spec-up/       # Test environment
+</code></pre>
+<h2>Version History</h2>
+<h3>v1.2.0 (Latest)</h3>
+<ul>
+<li>✨ <strong>Dynamic Boilerplate Fetching</strong>: Automatically fetches latest Spec-Up-T configuration from remote repository</li>
+<li>🔄 <strong>Smart External Specs Conversion</strong>: Converts legacy object format to modern array structure</li>
+<li>🎯 <strong>Improved Field Placement</strong>: Ensures author/description fields are correctly placed at spec level</li>
+<li>🛠️ <strong>Enhanced Fallback Support</strong>: Works offline with built-in configuration matching remote structure</li>
+<li>🧹 <strong>Code Quality</strong>: Removed unused configurations not present in official boilerplate</li>
+</ul>
+<h3>v1.1.0</h3>
+<ul>
+<li>🚀 Initial production release with complete migration workflow</li>
+</ul>
+<h2>License</h2>
+<p>MIT</p>
+<h2>Contributing</h2>
+<ol>
+<li>Fork the repository</li>
+<li>Create a feature branch</li>
+<li>Make your changes</li>
+<li>Add tests for new functionality</li>
+<li>Submit a pull request</li>
+</ol>
+<h2>Support</h2>
+<p>For issues or questions:</p>
+<ul>
+<li>Create an issue on GitHub</li>
+<li>Check existing documentation</li>
+<li>Review the troubleshooting section</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>lib/splitter.js</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>Spec-Up Splitter functionality for splitting glossary files</p></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>1.0.0</li></ul></dd>
+    
+
+    
+    <dt class="tag-since">Since:</dt>
+    <dd class="tag-since"><ul class="dummy"><li>2024-06-10</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Kor Dwarshuis</li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_splitter.js.html">lib/splitter.js</a>, <a href="lib_splitter.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Jun 10 2025 18:11:09 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: lib/migrator.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: lib/migrator.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @fileoverview Core migration functionality for Spec-Up to Spec-Up-T migration
+ * @module lib/migrator
+ * @author Kor Dwarshuis
+ * @version 1.2.0
+ * @since 2024-06-10
+ */
+
+const fs = require('fs').promises;
+const path = require('path');
+const chalk = require('chalk');
+
+// Import modular components
+const { detect } = require('./detector');
+const { backup } = require('./backup');
+const { cleanup } = require('./cleanup');
+const { updateConfigurations } = require('./updater');
+const { install } = require('./installer');
+const { split } = require('./splitter');
+const { isSpecUpFile, processContent } = require('./utils');
+
+/**
+ * Main migration function - migrates files or directories from Spec-Up to Spec-Up-T
+ * @param {string} source - Source file or directory path
+ * @param {Object} options - Migration options
+ * @param {string} [options.output='./migrated'] - Output directory path
+ * @param {string} [options.format='latest'] - Target format version
+ * @param {boolean} [options.dryRun=false] - Whether to perform a dry run
+ * @throws {Error} When source path doesn't exist or migration fails
+ * @example
+ * // Migrate a single file
+ * await migrate('./spec.md', { output: './output' });
+ * 
+ * // Migrate a directory with dry run
+ * await migrate('./spec-project', { dryRun: true });
+ */
+async function migrate(source, options = {}) {
+  const { output = './migrated', format = 'latest', dryRun = false } = options;
+
+  // Resolve absolute paths
+  const absoluteSource = path.resolve(source);
+  const absoluteOutput = path.resolve(output);
+
+  // Check if source exists
+  try {
+    await fs.access(absoluteSource);
+  } catch (error) {
+    throw new Error(`Source path does not exist: ${absoluteSource}`);
+  }
+
+  // Get source stats
+  const stats = await fs.stat(absoluteSource);
+  
+  if (stats.isFile()) {
+    await migrateFile(absoluteSource, absoluteOutput, format, dryRun);
+  } else if (stats.isDirectory()) {
+    await migrateDirectory(absoluteSource, absoluteOutput, format, dryRun);
+  } else {
+    throw new Error(`Invalid source type: ${absoluteSource}`);
+  }
+}
+
+/**
+ * Migrate a single file
+ * @param {string} filePath - Path to the file
+ * @param {string} outputDir - Output directory
+ * @param {string} format - Target format
+ * @param {boolean} dryRun - Whether this is a dry run
+ */
+/**
+ * Migrate a single file
+ * @param {string} filePath - Path to the file to migrate
+ * @param {string} outputDir - Output directory path
+ * @param {string} format - Target format for migration
+ * @param {boolean} dryRun - Whether this is a dry run
+ * @throws {Error} When file operations fail
+ */
+async function migrateFile(filePath, outputDir, format, dryRun) {
+  console.log(chalk.gray(`  Migrating file: ${filePath}`));
+  
+  if (!dryRun) {
+    // Ensure output directory exists
+    await fs.mkdir(outputDir, { recursive: true });
+    
+    // Resolve absolute path for the source file
+    const absoluteFilePath = path.resolve(filePath);
+    
+    // Check if it's a Spec-Up file
+    if (isSpecUpFile(path.basename(filePath))) {
+      // Read and process the file
+      const content = await fs.readFile(absoluteFilePath, 'utf8');
+      const processedContent = await processContent(content, format);
+      
+      // Write to output
+      const outputPath = path.join(outputDir, path.basename(filePath));
+      await fs.writeFile(outputPath, processedContent);
+      console.log(chalk.green(`  ✓ Migrated: ${path.basename(filePath)}`));
+    } else {
+      // Copy non-Spec-Up files as-is
+      const outputPath = path.join(outputDir, path.basename(filePath));
+      await fs.copyFile(absoluteFilePath, outputPath);
+      console.log(chalk.blue(`  → Copied: ${path.basename(filePath)}`));
+    }
+  }
+}
+
+/**
+ * Migrate a directory
+ * @param {string} dirPath - Path to the directory
+ * @param {string} outputDir - Output directory
+ * @param {string} format - Target format
+ * @param {boolean} dryRun - Whether this is a dry run
+ */
+async function migrateDirectory(dirPath, outputDir, format, dryRun) {
+  console.log(chalk.blue(`Migrating directory: ${dirPath}`));
+  
+  if (!dryRun) {
+    // Ensure output directory exists
+    await fs.mkdir(outputDir, { recursive: true });
+  }
+  
+  // Read directory contents
+  const entries = await fs.readdir(dirPath, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const sourcePath = path.join(dirPath, entry.name);
+    const targetPath = path.join(outputDir, entry.name);
+    
+    if (entry.isDirectory()) {
+      // Recursively migrate subdirectories
+      await migrateDirectory(sourcePath, targetPath, format, dryRun);
+    } else if (entry.isFile()) {
+      // Migrate individual files
+      await migrateFile(sourcePath, outputDir, format, dryRun);
+    }
+  }
+}
+
+/**
+ * Validate a Spec-Up specification for migration readiness
+ * @param {string} source - Source file or directory path to validate
+ * @throws {Error} When source path doesn't exist or validation fails
+ * @example
+ * // Validate a single file
+ * await validate('./spec.md');
+ * 
+ * // Validate a directory
+ * await validate('./my-spec-project');
+ */
+async function validate(source) {
+  const absoluteSource = path.resolve(source);
+  
+  try {
+    await fs.access(absoluteSource);
+  } catch (error) {
+    throw new Error(`Source path does not exist: ${absoluteSource}`);
+  }
+  
+  const stats = await fs.stat(absoluteSource);
+  
+  if (stats.isFile()) {
+    if (!isSpecUpFile(absoluteSource)) {
+      throw new Error('File does not appear to be a Spec-Up file');
+    }
+    console.log(chalk.green('✓ Valid Spec-Up file'));
+  } else if (stats.isDirectory()) {
+    const detection = await detect(absoluteSource);
+    if (detection.confidence &lt; 50) {
+      throw new Error('Directory does not contain a valid Spec-Up installation');
+    }
+    console.log(chalk.green(`✓ Valid Spec-Up installation (${detection.confidence}% confidence)`));
+  }
+}
+
+/**
+ * Complete migration process - runs all phases in sequence
+ * @param {string} directory - Directory path containing Spec-Up installation
+ * @param {Object} options - Migration options
+ * @returns {Object} - Complete migration result
+ */
+async function completeMigration(directory = '.', options = {}) {
+  const absoluteDir = path.resolve(directory);
+  const { dryRun = false, skipBackup = false, skipInstall = false } = options;
+  
+  const phases = [];
+  let overallSuccess = true;
+  
+  try {
+    // Phase 1: Detection
+    console.log(chalk.blue('Phase 1: Detecting Spec-Up installation...'));
+    const detection = await detect(absoluteDir);
+    phases.push({ name: 'Detection', result: detection, success: detection.confidence >= 80 });
+    
+    if (detection.confidence &lt; 80) {
+      throw new Error('Directory does not appear to contain a valid Spec-Up installation');
+    }
+    
+    // Phase 2: Backup (optional)
+    if (!skipBackup &amp;&amp; !dryRun) {
+      console.log(chalk.blue('Phase 2: Creating backups...'));
+      const backupResult = await backup(absoluteDir);
+      phases.push({ name: 'Backup', result: backupResult, success: backupResult.summary.backed_up > 0 });
+    }
+    
+    // Phase 3: Cleanup
+    console.log(chalk.blue('Phase 3: Cleaning up obsolete files...'));
+    const cleanupResult = await cleanup(absoluteDir, { dryRun });
+    phases.push({ name: 'Cleanup', result: cleanupResult, success: true });
+    
+    // Phase 4: Update configurations
+    console.log(chalk.blue('Phase 4: Updating configurations...'));
+    const updateResult = await updateConfigurations(absoluteDir, { dryRun });
+    phases.push({ name: 'Update Configurations', result: updateResult, success: updateResult.summary.successful > 0 });
+    
+    // Phase 5: Split glossary (if applicable)
+    console.log(chalk.blue('Phase 5: Splitting glossary file...'));
+    try {
+      const splitResult = await split({ 
+        directory: absoluteDir, 
+        dryRun, 
+        verbose: false 
+      });
+      phases.push({ name: 'Glossary Splitting', result: splitResult, success: splitResult.success });
+    } catch (error) {
+      // Splitting is optional - if it fails, we don't fail the entire migration
+      console.log(chalk.yellow(`⚠️ Glossary splitting failed: ${error.message}`));
+      phases.push({ 
+        name: 'Glossary Splitting', 
+        result: { success: false, messages: [error.message] }, 
+        success: false,
+        optional: true 
+      });
+    }
+
+    // Phase 6: Install Spec-Up-T (final step)
+    if (!dryRun) {
+      console.log(chalk.blue('Phase 6: Installing Spec-Up-T...'));
+      const installResult = await install(absoluteDir, { skipInstall });
+      phases.push({ name: 'Installation', result: installResult, success: installResult.summary.successful > 0 });
+    }
+    
+    return {
+      directory: absoluteDir,
+      phases,
+      success: phases.every(phase => phase.success),
+      summary: {
+        total_phases: phases.length,
+        successful_phases: phases.filter(p => p.success).length,
+        dry_run: dryRun
+      }
+    };
+    
+  } catch (error) {
+    return {
+      directory: absoluteDir,
+      phases,
+      success: false,
+      error: error.message,
+      summary: {
+        total_phases: phases.length,
+        successful_phases: phases.filter(p => p.success).length,
+        dry_run: dryRun
+      }
+    };
+  }
+}
+
+module.exports = {
+  migrate,
+  detect,
+  backup,
+  validate,
+  migrateFile,
+  migrateDirectory,
+  processContent,
+  cleanup,
+  updateConfigurations,
+  install,
+  completeMigration,
+  split
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Jun 10 2025 18:11:09 GMT+0200 (Central European Summer Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
