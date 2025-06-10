@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
-const { split, splitGlossaryFile, checkSplittingConditions, getSplitterConfig } = require('../lib/splitter');
+const { split, splitGlossaryFile, checkSplittingConditions, getSplitterConfig, updateSpecsJsonAfterSplit } = require('../lib/splitter');
 
 // Test helper to create temporary test directory
 async function createTestEnvironment() {
@@ -174,6 +174,53 @@ describe('Splitter Integration', () => {
     const conditions = await checkSplittingConditions(config.sourceTermsFile, config.termFilesDir, testDir);
     expect(conditions.canProceed).toBe(false);
     expect(conditions.messages.some(msg => msg.includes('There are .md files in the directory'))).toBe(true);
+  });
+
+  test('should remove source terms file from markdown_paths after splitting', async () => {
+    const config = await getSplitterConfig(testDir);
+    
+    // Verify source file is initially in markdown_paths
+    let specsContent = await fs.readFile(path.join(testDir, 'specs.json'), 'utf8');
+    let specs = JSON.parse(specsContent);
+    const initialMarkdownPaths = specs.specs[0].markdown_paths;
+    expect(initialMarkdownPaths).toContain('terms-and-definitions-intro.md');
+    
+    // Perform the split
+    const result = await splitGlossaryFile(config.sourceTermsFile, config.termFilesDir, {
+      dryRun: false,
+      verbose: true,
+      projectDir: testDir
+    });
+    
+    expect(result.success).toBe(true);
+    expect(result.messages.some(msg => msg.includes('Removed \'terms-and-definitions-intro.md\' from markdown_paths'))).toBe(true);
+    expect(result.messages.some(msg => msg.includes('Updated specs.json to remove source terms file from markdown_paths'))).toBe(true);
+    
+    // Verify source file was removed from markdown_paths
+    specsContent = await fs.readFile(path.join(testDir, 'specs.json'), 'utf8');
+    specs = JSON.parse(specsContent);
+    const updatedMarkdownPaths = specs.specs[0].markdown_paths;
+    expect(updatedMarkdownPaths).not.toContain('terms-and-definitions-intro.md');
+    
+    // Verify backup still contains original configuration
+    const backupContent = await fs.readFile(path.join(testDir, 'specs.unsplit.json'), 'utf8');
+    const backupSpecs = JSON.parse(backupContent);
+    expect(backupSpecs.specs[0].markdown_paths).toContain('terms-and-definitions-intro.md');
+  });
+
+  test('updateSpecsJsonAfterSplit should handle dry run correctly', async () => {
+    const config = await getSplitterConfig(testDir);
+    
+    // Test dry run
+    const dryRunResult = await updateSpecsJsonAfterSplit(config.sourceTermsFile, testDir, true);
+    expect(dryRunResult.success).toBe(true);
+    expect(dryRunResult.messages.some(msg => msg.includes('Would remove'))).toBe(true);
+    expect(dryRunResult.messages.some(msg => msg.includes('Dry run - specs.json would be updated'))).toBe(true);
+    
+    // Verify specs.json was not actually modified
+    const specsContent = await fs.readFile(path.join(testDir, 'specs.json'), 'utf8');
+    const specs = JSON.parse(specsContent);
+    expect(specs.specs[0].markdown_paths).toContain('terms-and-definitions-intro.md');
   });
 });
 
