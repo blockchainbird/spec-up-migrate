@@ -81,8 +81,9 @@ npx spec-up-migrate complete --no-backup
 2. 📦 Creates timestamped backup of critical files
 3. 🧹 Removes obsolete files and legacy dependencies
 4. ⚡ Updates package.json and specs.json for Spec-Up-T with dynamic boilerplate
-5. 🚀 Installs Spec-Up-T with complete project structure
-6. ✅ Validates migration success
+5. ✂️ Splits glossary file into individual term files (if applicable)
+6. 🚀 Installs Spec-Up-T with complete project structure
+7. ✅ Validates migration success
 
 ### 🔍 Detection
 
