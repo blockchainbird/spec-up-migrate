@@ -13,7 +13,8 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - ⚡ **Dynamic Configuration**: Fetch latest Spec-Up-T configuration from official repository
 - 🔄 **Intelligent Conversion**: Convert legacy external_specs format to modern Spec-Up-T structure
 - 🚀 **Complete Setup**: Install Spec-Up-T with proper project structure and terminology support
-- 🔄 **End-to-End Migration**: Fully automated migration workflow
+- ✂️ **Glossary Splitting**: Split glossary files into individual term definition files for better organization
+- 🔄 **End-to-End Migration**: Fully automated migration workflow including glossary splitting
 - ✅ **Validation**: Built-in validation to ensure migration success
 - 🎯 **Professional Output**: Generate publication-ready HTML specifications
 
@@ -24,6 +25,8 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - **✅ Current Dependencies**: Uses Spec-Up-T v1.2.7 and current dependency versions
 - **✅ Improved Validation**: Built-in project validation ensures migration success
 - **✅ Better Error Handling**: Graceful fallbacks when remote fetching fails
+- **✂️ Glossary Splitter**: Integrated spec-up-splitter functionality for automatic glossary file splitting
+- **🔄 Enhanced Migration**: Splitting now included as final step in complete migration workflow
 
 ## 🚀 Quick Start
 
@@ -184,6 +187,39 @@ npm run validate
 - ✅ Valid specs.json structure
 - ✅ Recommended directory structure
 - ✅ Configuration files (.env.example)
+
+### ✂️ Split Glossary
+
+Split a glossary file into individual term definition files (useful for Spec-Up-T terminology management):
+
+```bash
+# Split glossary in current directory
+npx spec-up-migrate split
+
+# Split glossary in specific directory
+npx spec-up-migrate split ./my-spec-project
+
+# Dry run to see what would be created
+npx spec-up-migrate split --dry-run
+
+# Verbose output with detailed information
+npx spec-up-migrate split --verbose
+
+# Alternative: use npm script after integration
+npm run split
+```
+
+**What this does:**
+1. 📖 Reads glossary file specified in specs.json
+2. ✂️ Splits terms marked with `[[def: ]]` into individual files
+3. 📁 Creates terms-definitions directory with organized term files
+4. 💾 Creates backup of original specs.json
+5. 🔧 Generates intro file with remaining content
+
+**Requirements:**
+- ✅ specs.json file with proper configuration
+- ✅ Glossary file exists (first item in markdown_paths)
+- ✅ Clean terms-definitions directory (no existing .md files)
 
 ### Legacy Migrate Command
 
