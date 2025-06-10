@@ -1,6 +1,6 @@
 {
   "name": "spec-up-migrate",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A comprehensive migration tool for migrating Spec-Up projects to Spec-Up-T",
   "main": "index.js",
   "bin": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch", 
+    "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build": "echo \"Build completed\"",
     "prepublishOnly": "npm run build",
