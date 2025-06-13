@@ -18,6 +18,16 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - ✅ **Validation**: Built-in validation to ensure migration success
 - 🎯 **Professional Output**: Generate publication-ready HTML specifications
 
+## 🔄 Configuration Sources
+
+The migration tool fetches the latest configurations from the official Spec-Up-T repository to ensure your migrated project uses current standards:
+
+- **Scripts Configuration**: `blockchainbird/spec-up-t/src/install-from-boilerplate/config-scripts-keys.js`
+- **Specs Template**: `blockchainbird/spec-up-t/src/install-from-boilerplate/boilerplate/specs.json`
+- **Gitignore Patterns**: `blockchainbird/spec-up-t/src/install-from-boilerplate/boilerplate/gitignore`
+
+If remote fetching fails, the tool automatically falls back to built-in configurations that match the Spec-Up-T standards.
+
 ## 🔧 Latest Updates
 
 - **✅ Fixed Configuration Source**: Now correctly fetches boilerplate from `blockchainbird/spec-up-t` repository
@@ -301,6 +311,30 @@ The cleanup process removes these obsolete files:
 - `package-lock.json` (regenerated)
 - `specup_logo.png` (regenerated)
 
+## 🛠️ What Gets Migrated
+
+### Package.json Updates
+- ✅ Updates dependencies to use `spec-up-t` instead of `spec-up`
+- ✅ Adds all required Spec-Up-T scripts (edit, render, dev, etc.)
+- ✅ Preserves existing project metadata (name, version, author, etc.)
+- ✅ Removes obsolete configurations
+
+### Specs.json Configuration
+- ✅ Converts to Spec-Up-T format with new required fields
+- ✅ Adds `spec_terms_directory` for terminology support
+- ✅ Converts `external_specs` format from Spec-Up to Spec-Up-T
+- ✅ Adds Spec-Up-T specific configurations (katex, etc.)
+
+### Directory Structure
+- ✅ Creates `spec/terms-definitions/` directory for terminology
+- ✅ Adds required asset files for content insertion examples
+- ✅ Creates `.env.example` for configuration templates
+
+### Gitignore Updates
+- ✅ Adds Spec-Up-T specific ignore patterns
+- ✅ Removes deprecated entries
+- ✅ Fetches latest patterns from official boilerplate
+
 ## Configuration Changes
 
 ### specs.json Migration
@@ -451,8 +485,41 @@ npm run render  # Generate HTML specification
 npm run dev     # Development mode with live reload
 ```
 
-### Example 2: Migration with Preview
+## 🚀 After Migration
 
+Once migration completes successfully, follow these steps to get your project running:
+
+### 1. Install Dependencies
+```bash
+npm install  # Usually done automatically during migration
+```
+
+### 2. Test the Migration
+```bash
+npm run render  # Generate HTML specification
+```
+
+### 3. Start Development
+```bash
+npm run dev     # Start development server with live reload
+```
+
+### 4. View Available Commands
+```bash
+npm run help    # See all available Spec-Up-T commands
+```
+
+### 5. Additional Commands
+```bash
+npm run topdf        # Generate PDF version
+npm run healthCheck  # Verify project health
+npm run edit         # Open editor interface
+```
+
+### 6. Troubleshooting
+If the migration fails to fetch remote configurations, it will automatically fall back to built-in defaults that match the Spec-Up-T standards.
+
+### Example 2: Migration with Preview
 ```bash
 # First, check if your project is compatible:
 npx spec-up-migrate detect --verbose
@@ -494,78 +561,6 @@ npx spec-up-migrate backup
 npx spec-up-migrate cleanup --dry-run
 npx spec-up-migrate update --dry-run
 npx spec-up-migrate install --dry-run
-```
-
-## 📊 Migration Results
-
-After successful migration, your project gains these capabilities:
-
-### ✅ New Features Available
-- **Dynamic Configuration**: Always uses latest Spec-Up-T standards via remote boilerplate
-- **Modern External Specs**: Structured external specification references with GitHub integration
-- **Terminology Management**: Structured terminology with cross-references
-- **Advanced Rendering**: Professional-grade HTML output
-- **PDF Generation**: `npm run topdf`
-- **Development Mode**: Live reload with `npm run dev`
-- **Health Checking**: Project validation with `npm run healthCheck`
-- **External References**: Automatic reference collection and caching
-
-### ✅ Modern Tooling
-- **12+ npm scripts** for complete workflow management
-- **Asset management** with automated file handling
-- **Specification versioning** with automatic index generation
-- **External specs integration** for multi-repository projects
-- **Remote boilerplate sync** for always up-to-date configurations
-
-## Examples
-
-### Basic Migration
-
-```bash
-# Navigate to your Spec-Up project
-cd my-spec-project
-
-# Run complete migration
-npx spec-up-migrate complete
-
-# Verify the migration
-npx spec-up-t render
-```
-
-### Step-by-Step Migration
-
-```bash
-# 1. Detect and analyze
-npx spec-up-migrate detect -v
-
-# 2. Create backup
-npx spec-up-migrate backup
-
-# 3. Clean obsolete files
-npx spec-up-migrate cleanup --dry-run
-npx spec-up-migrate cleanup
-
-# 4. Update configurations (with dynamic boilerplate)
-npx spec-up-migrate update
-
-# 5. Install Spec-Up-T
-npx spec-up-migrate install
-```
-
-### Troubleshooting
-
-If migration fails:
-
-```bash
-# Check what was detected
-npx spec-up-migrate detect -v
-
-# Restore from backup if needed
-cp -r ./backup-[timestamp]/* ./
-
-# Try individual phases
-npx spec-up-migrate cleanup --dry-run
-npx spec-up-migrate update --dry-run
 ```
 
 ## Development
