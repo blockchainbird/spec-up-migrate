@@ -84,18 +84,3 @@ config.json
 # Migration tool specific temporary outputs
 migration-*
 backup-*
-
-# Test artifacts and validation files that should not be committed
-test-migration-*/
-final-comprehensive-test/
-test-migration-validation.js
-FINAL-TEST-RESULTS.md
-MISSION-COMPLETE.md
-lib/migrator-refactored.js
-
-
-# Test directories and debug files (development artifacts)
-test-temp/
-test-real-world/
-test-cli-integration.js
-test-*.js
