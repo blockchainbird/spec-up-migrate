@@ -328,13 +328,15 @@ async function fetchSpecUpTBoilerplate() {
  * @param {Object} spec - Original Spec-Up specification object
  * @param {Object} [options={}] - Transformation options
  * @param {Object} [options.boilerplate] - Boilerplate configuration to merge
- * @returns {Object} Transformed Spec-Up-T specification object
+ * @param {string} [options.baseDirectory] - Base directory to discover markdown files from
+ * @returns {Promise&lt;Object>} Transformed Spec-Up-T specification object
  */
-function transformSpecToSpecUpT(spec, options = {}) {
+async function transformSpecToSpecUpT(spec, options = {}) {
   const {
     boilerplateSpec = null,
     trackChanges = false,
-    specTitle = spec.title || 'spec'
+    specTitle = spec.title || 'spec',
+    baseDirectory = null
   } = options;
 
   const transformedSpec = { ...spec };
@@ -370,13 +372,13 @@ function transformSpecToSpecUpT(spec, options = {}) {
     if (trackChanges) changes.push(`Added spec_terms_directory for ${specTitle}`);
   }
 
-  // Always copy spec_directory and output_path from boilerplate if available
+  // Copy spec_directory and output_path from boilerplate ONLY if not already set by user
   if (boilerplateSpec) {
-    if (boilerplateSpec.spec_directory) {
+    if (boilerplateSpec.spec_directory &amp;&amp; !transformedSpec.spec_directory) {
       transformedSpec.spec_directory = boilerplateSpec.spec_directory;
       if (trackChanges) changes.push(`Set spec_directory from boilerplate for ${specTitle}`);
     }
-    if (boilerplateSpec.output_path) {
+    if (boilerplateSpec.output_path &amp;&amp; !transformedSpec.output_path) {
       transformedSpec.output_path = boilerplateSpec.output_path;
       if (trackChanges) changes.push(`Set output_path from boilerplate for ${specTitle}`);
     }
@@ -392,9 +394,36 @@ function transformSpecToSpecUpT(spec, options = {}) {
     if (trackChanges) changes.push(`Set default output_path for ${specTitle}`);
   }
 
-  // Handle markdown_paths - preserve original paths and add terms file at the end
+  // Handle markdown_paths - discover files and preserve original paths
   if (!transformedSpec.markdown_paths) {
     transformedSpec.markdown_paths = [];
+  }
+
+  // Discover markdown files in the spec directory if baseDirectory is provided
+  if (baseDirectory &amp;&amp; transformedSpec.spec_directory) {
+    try {
+      const discoveredFiles = await discoverMarkdownFiles(baseDirectory, transformedSpec.spec_directory);
+      
+      // Add discovered files that aren't already in markdown_paths
+      const existingFiles = new Set(transformedSpec.markdown_paths);
+      let addedFiles = 0;
+      
+      for (const file of discoveredFiles) {
+        // Skip terms-and-definitions-intro.md as we'll add it separately
+        if (file !== 'terms-and-definitions-intro.md' &amp;&amp; !existingFiles.has(file)) {
+          transformedSpec.markdown_paths.push(file);
+          addedFiles++;
+        }
+      }
+      
+      if (addedFiles > 0 &amp;&amp; trackChanges) {
+        changes.push(`Discovered and added ${addedFiles} markdown file(s) to markdown_paths`);
+      }
+    } catch (error) {
+      if (trackChanges) {
+        changes.push(`Warning: Could not discover markdown files: ${error.message}`);
+      }
+    }
   }
 
   // Add terms-and-definitions-intro.md at the end if not already present
@@ -415,7 +444,12 @@ function transformSpecToSpecUpT(spec, options = {}) {
       Object.entries(specGroup).forEach(([key, url]) => {
         // Extract GitHub info from URL if possible
         let gitHubUrl = '';
-        let termsDir = 'spec/term-definitions';
+        // Use the spec's directory for terms_dir, removing ./ prefix if present
+        let specDir = transformedSpec.spec_directory || './spec';
+        if (specDir.startsWith('./')) {
+          specDir = specDir.substring(2);
+        }
+        let termsDir = `${specDir}/term-definitions`;
 
         if (typeof url === 'string' &amp;&amp; url.includes('github.io')) {
           // Try to convert GitHub Pages URL to repository URL
@@ -465,18 +499,21 @@ function transformSpecToSpecUpT(spec, options = {}) {
 /**
  * Convert legacy Spec-Up specifications to modern Spec-Up-T format
  * @param {Object} specUpSpecs - Original specs.json object from Spec-Up
+ * @param {string} [baseDirectory] - Base directory for markdown file discovery
  * @returns {Promise&lt;Object>} Converted specs.json object for Spec-Up-T
  * @throws {Error} When conversion fails or boilerplate cannot be fetched
  */
-function convertSpecUpToSpecUpT(specUpSpecs) {
+async function convertSpecUpToSpecUpT(specUpSpecs, baseDirectory = null) {
   if (!specUpSpecs || !Array.isArray(specUpSpecs.specs)) {
     throw new Error('Invalid specs configuration');
   }
 
-  const convertedSpecs = specUpSpecs.specs.map(spec => {
-    const { transformedSpec } = transformSpecToSpecUpT(spec);
+  const convertPromises = specUpSpecs.specs.map(async (spec) => {
+    const { transformedSpec } = await transformSpecToSpecUpT(spec, { baseDirectory });
     return transformedSpec;
   });
+
+  const convertedSpecs = await Promise.all(convertPromises);
 
   return {
     specs: convertedSpecs
@@ -495,23 +532,10 @@ const BOILERPLATE_CONFIG = {
       path: '.env.example',
       content: '# Optional GitHub API token for increased rate limits\nGITHUB_API_TOKEN=YOUR_GITHUB_API_TOKEN\n'
     }
-  ],
-
-  specFiles: [
-    {
-      path: 'spec/terms-and-definitions-intro.md',
-      content: `# Terms and Definitions
-
-This section contains the terminology used in this specification.
-
-## Introduction
-
-All terminology in this specification is defined in separate files in the \`terms-definitions\` directory. This allows for better organization and reuse of terms across specifications.
-
-Terms are automatically linked throughout the specification using the \`[[ref: term-name]]\` syntax.
-`
-    }
   ]
+
+  // Note: specFiles is now dynamically generated in createSpecificationFiles() 
+  // based on the actual spec_directory from specs.json
 };
 
 /**
@@ -739,16 +763,18 @@ async function updateSpecsJson(directory, dryRun) {
 
     // Transform existing specs to Spec-Up-T format
     if (specsData.specs.length > 0) {
-      const transformedSpecs = specsData.specs.map((spec, index) => {
-        const { transformedSpec, changes: specChanges } = transformSpecToSpecUpT(spec, {
+      const transformPromises = specsData.specs.map(async (spec, index) => {
+        const { transformedSpec, changes: specChanges } = await transformSpecToSpecUpT(spec, {
           boilerplateSpec,
           trackChanges: true,
-          specTitle: spec.title || `spec ${index + 1}`
+          specTitle: spec.title || `spec ${index + 1}`,
+          baseDirectory: directory
         });
         changes.push(...specChanges);
         return transformedSpec;
       });
       
+      const transformedSpecs = await Promise.all(transformPromises);
       specsData.specs = transformedSpecs;
       changes.push(`Transformed ${transformedSpecs.length} existing spec(s) to Spec-Up-T format`);
     } else {
@@ -854,15 +880,35 @@ async function updateGitignore(directory, dryRun) {
  * Create required directories for Spec-Up-T
  */
 async function createRequiredDirectories(directory, dryRun) {
-  const requiredDirs = [
-    'spec',
-    'spec/terms-definitions',
-    'assets'
-  ];
-
   const changes = [];
 
   try {
+    // Read spec_directory from specs.json
+    const specsPath = path.join(directory, 'specs.json');
+    let specDirectory = './spec'; // Default fallback
+    
+    try {
+      const content = await fs.readFile(specsPath, 'utf8');
+      const specsData = safeJsonParse(content);
+      
+      if (specsData.specs &amp;&amp; specsData.specs[0] &amp;&amp; specsData.specs[0].spec_directory) {
+        specDirectory = specsData.specs[0].spec_directory;
+        
+        // Remove leading ./ if present for consistent path handling
+        if (specDirectory.startsWith('./')) {
+          specDirectory = specDirectory.substring(2);
+        }
+      }
+    } catch (error) {
+      // Use default if specs.json can't be read
+    }
+
+    const requiredDirs = [
+      specDirectory,
+      `${specDirectory}/terms-definitions`,
+      'assets'
+    ];
+
     for (const dir of requiredDirs) {
       const dirPath = path.join(directory, dir);
 
@@ -982,7 +1028,44 @@ async function createSpecificationFiles(directory, dryRun) {
   const changes = [];
 
   try {
-    for (const specFile of BOILERPLATE_CONFIG.specFiles) {
+    // Read spec_directory from specs.json
+    const specsPath = path.join(directory, 'specs.json');
+    let specDirectory = './spec'; // Default fallback
+    
+    try {
+      const content = await fs.readFile(specsPath, 'utf8');
+      const specsData = safeJsonParse(content);
+      
+      if (specsData.specs &amp;&amp; specsData.specs[0] &amp;&amp; specsData.specs[0].spec_directory) {
+        specDirectory = specsData.specs[0].spec_directory;
+        
+        // Remove leading ./ if present for consistent path handling
+        if (specDirectory.startsWith('./')) {
+          specDirectory = specDirectory.substring(2);
+        }
+      }
+    } catch (error) {
+      // Use default if specs.json can't be read
+    }
+
+    // Create dynamic spec files based on the actual spec_directory
+    const dynamicSpecFiles = [
+      {
+        path: `${specDirectory}/terms-and-definitions-intro.md`,
+        content: `# Terms and Definitions
+
+This section contains the terminology used in this specification.
+
+## Introduction
+
+All terminology in this specification is defined in separate files in the \`terms-definitions\` directory. This allows for better organization and reuse of terms across specifications.
+
+Terms are automatically linked throughout the specification using the \`[[ref: term-name]]\` syntax.
+`
+      }
+    ];
+
+    for (const specFile of dynamicSpecFiles) {
       const specPath = path.join(directory, specFile.path);
 
       try {
@@ -1016,6 +1099,37 @@ async function createSpecificationFiles(directory, dryRun) {
   }
 }
 
+/**
+ * Discover markdown files in a spec directory
+ * @param {string} baseDirectory - Base directory path (where specs.json is located)
+ * @param {string} specDirectory - Spec directory path (relative to base)
+ * @returns {Promise&lt;string[]>} Array of discovered markdown file names
+ */
+async function discoverMarkdownFiles(baseDirectory, specDirectory) {
+  try {
+    // Resolve the full path to the spec directory
+    const fullSpecPath = path.resolve(baseDirectory, specDirectory);
+    
+    // Check if directory exists
+    if (!await fileExists(fullSpecPath)) {
+      return [];
+    }
+    
+    // Read directory contents
+    const files = await fs.readdir(fullSpecPath);
+    
+    // Filter for markdown files and sort them
+    const markdownFiles = files
+      .filter(file => file.endsWith('.md'))
+      .sort();
+    
+    return markdownFiles;
+  } catch (error) {
+    console.warn(`Warning: Could not read spec directory ${specDirectory}: ${error.message}`);
+    return [];
+  }
+}
+
 module.exports = {
   updateConfigurations,
   updatePackageJson,
@@ -1034,7 +1148,8 @@ module.exports = {
   BOILERPLATE_CONFIG,
   REPO_CONFIG,
   generateGitHubRawUrl,
-  generateGitHubRepoUrl
+  generateGitHubRepoUrl,
+  discoverMarkdownFiles
 };
 </code></pre>
         </article>
@@ -1046,13 +1161,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li><li><a href="global.html#updateSpecsJsonAfterSplit">updateSpecsJsonAfterSplit</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Jun 10 2025 18:11:09 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Jun 13 2025 11:55:36 GMT+0200 (Central European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -224,7 +224,7 @@ This centralizes all repository references to make them easily configurable</p>
     
 
     
-    <h4 class="name" id="~convertSpecUpToSpecUpT"><span class="type-signature">(inner) </span>convertSpecUpToSpecUpT<span class="signature">(specUpSpecs)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+    <h4 class="name" id="~convertSpecUpToSpecUpT"><span class="type-signature">(async, inner) </span>convertSpecUpToSpecUpT<span class="signature">(specUpSpecs, baseDirectory<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -256,7 +256,11 @@ This centralizes all repository references to make them easily configurable</p>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -281,10 +285,61 @@ This centralizes all repository references to make them easily configurable</p>
             </td>
 
             
+                <td class="attributes">
+                
 
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
             
 
             <td class="description last"><p>Original specs.json object from Spec-Up</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>baseDirectory</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+
+            <td class="description last"><p>Base directory for markdown file discovery</p></td>
         </tr>
 
     
@@ -325,7 +380,7 @@ This centralizes all repository references to make them easily configurable</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line443">line 443</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line478">line 478</a>
     </li></ul></dd>
     
 
@@ -464,7 +519,7 @@ This centralizes all repository references to make them easily configurable</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line873">line 873</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line919">line 919</a>
     </li></ul></dd>
     
 
@@ -552,7 +607,7 @@ This centralizes all repository references to make them easily configurable</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line828">line 828</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line854">line 854</a>
     </li></ul></dd>
     
 
@@ -640,7 +695,7 @@ This centralizes all repository references to make them easily configurable</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line914">line 914</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line960">line 960</a>
     </li></ul></dd>
     
 
@@ -728,7 +783,7 @@ This centralizes all repository references to make them easily configurable</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line953">line 953</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line999">line 999</a>
     </li></ul></dd>
     
 
@@ -753,6 +808,188 @@ This centralizes all repository references to make them easily configurable</p>
 
 
 
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~discoverMarkdownFiles"><span class="type-signature">(async, inner) </span>discoverMarkdownFiles<span class="signature">(baseDirectory, specDirectory)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;string>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Discover markdown files in a spec directory</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>baseDirectory</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Base directory path (where specs.json is located)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>specDirectory</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Spec directory path (relative to base)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line1080">line 1080</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Array of discovered markdown file names</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;string>></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -2088,7 +2325,7 @@ This centralizes all repository references to make them easily configurable</p>
     
 
     
-    <h4 class="name" id="~transformSpecToSpecUpT"><span class="type-signature">(inner) </span>transformSpecToSpecUpT<span class="signature">(spec, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="~transformSpecToSpecUpT"><span class="type-signature">(async, inner) </span>transformSpecToSpecUpT<span class="signature">(spec, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
     
 
     
@@ -2261,6 +2498,39 @@ This centralizes all repository references to make them easily configurable</p>
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>baseDirectory</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Base directory to discover markdown files from</p></td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -2305,7 +2575,7 @@ This centralizes all repository references to make them easily configurable</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line305">line 305</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line306">line 306</a>
     </li></ul></dd>
     
 
@@ -2345,7 +2615,7 @@ This centralizes all repository references to make them easily configurable</p>
     </dt>
     <dd>
         
-<span class="param-type">Object</span>
+<span class="param-type">Promise.&lt;Object></span>
 
 
     </dd>
@@ -2592,7 +2862,7 @@ This centralizes all repository references to make them easily configurable</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line503">line 503</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line527">line 527</a>
     </li></ul></dd>
     
 
@@ -2740,7 +3010,7 @@ const result = await updateConfigurations('./project');</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line757">line 757</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line783">line 783</a>
     </li></ul></dd>
     
 
@@ -2828,7 +3098,7 @@ const result = await updateConfigurations('./project');</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line559">line 559</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line583">line 583</a>
     </li></ul></dd>
     
 
@@ -2916,7 +3186,7 @@ const result = await updateConfigurations('./project');</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line666">line 666</a>
+        <a href="lib_updater.js.html">lib/updater.js</a>, <a href="lib_updater.js.html#line690">line 690</a>
     </li></ul></dd>
     
 
@@ -2962,13 +3232,13 @@ const result = await updateConfigurations('./project');</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-bin_cli.html">bin/cli</a></li><li><a href="module-index.html">index</a></li><li><a href="module-lib_backup.html">lib/backup</a></li><li><a href="module-lib_cleanup.html">lib/cleanup</a></li><li><a href="module-lib_detector.html">lib/detector</a></li><li><a href="module-lib_installer.html">lib/installer</a></li><li><a href="module-lib_migrator.html">lib/migrator</a></li><li><a href="module-lib_updater.html">lib/updater</a></li><li><a href="module-lib_utils.html">lib/utils</a></li><li><a href="module-validate.html">validate</a></li></ul><h3>Global</h3><ul><li><a href="global.html#SPLITTER_CONFIG">SPLITTER_CONFIG</a></li><li><a href="global.html#checkSplittingConditions">checkSplittingConditions</a></li><li><a href="global.html#fixGlossaryFile">fixGlossaryFile</a></li><li><a href="global.html#getSplitterConfig">getSplitterConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitGlossaryFile">splitGlossaryFile</a></li><li><a href="global.html#updateSpecsJsonAfterSplit">updateSpecsJsonAfterSplit</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Tue Jun 10 2025 18:11:09 GMT+0200 (Central European Summer Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Fri Jun 13 2025 11:55:36 GMT+0200 (Central European Summer Time)
 </footer>
 
 <script> prettyPrint(); </script>
