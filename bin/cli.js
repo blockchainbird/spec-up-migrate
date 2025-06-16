@@ -325,6 +325,7 @@ program
   .argument('[directory]', 'Directory to migrate', '.')
   .option('--dry-run', 'Show what would be done without making changes')
   .option('--no-backup', 'Skip backup phase (not recommended)')
+  .option('--skip-detection', 'Skip detection phase and assume valid Spec-Up installation')
   .action(async (directory, options) => {
     try {
       console.log(chalk.blue('🔄 Starting complete Spec-Up to Spec-Up-T migration...'));
@@ -336,11 +337,15 @@ program
       if (options.noBackup) {
         console.log(chalk.red('⚠️  Backup phase will be skipped'));
       }
+      if (options.skipDetection) {
+        console.log(chalk.yellow('⚠️  Detection phase will be skipped - assuming valid Spec-Up installation'));
+      }
       console.log('');
 
       const result = await completeMigration(directory, {
         dryRun: options.dryRun,
-        skipBackup: options.noBackup
+        skipBackup: options.noBackup,
+        skipDetection: options.skipDetection
       });
       
       console.log('');
