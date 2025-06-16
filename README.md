@@ -85,10 +85,16 @@ npx spec-up-migrate complete --dry-run
 
 # Skip backup phase (not recommended)
 npx spec-up-migrate complete --no-backup
+
+# Skip detection phase (useful for troubleshooting)
+npx spec-up-migrate complete --skip-detection
+
+# Combine options as needed
+npx spec-up-migrate complete --skip-detection --dry-run
 ```
 
 **What this does:**
-1. 🔍 Detects Spec-Up installation (95%+ confidence required)
+1. 🔍 Detects Spec-Up installation (95%+ confidence required, can be skipped with `--skip-detection`)
 2. 📦 Creates timestamped backup of critical files
 3. 🧹 Removes obsolete files and legacy dependencies
 4. ⚡ Updates package.json and specs.json for Spec-Up-T with dynamic boilerplate
@@ -431,6 +437,7 @@ project/
 
 #### complete
 - `--no-backup` - Skip backup phase (not recommended)
+- `--skip-detection` - Skip detection phase and assume valid Spec-Up installation
 - `--dry-run` - Show what would be done
 
 #### backup  
@@ -556,12 +563,24 @@ npx spec-up-migrate complete
 npx spec-up-migrate detect
 # Look for confidence level - should be >80%
 
+# If detection fails but you know your project is valid Spec-Up:
+npx spec-up-migrate complete --skip-detection
+
 # Try individual phases:
 npx spec-up-migrate backup
 npx spec-up-migrate cleanup --dry-run
 npx spec-up-migrate update --dry-run
 npx spec-up-migrate install --dry-run
+
+# Use environment variable to skip detection:
+SKIP_DETECTION=true npx spec-up-migrate complete
 ```
+
+**When to use `--skip-detection`:**
+- Detection confidence is below 80% but you know the project is valid Spec-Up
+- Working with a modified Spec-Up project structure
+- Debugging detection issues
+- Testing migration on non-standard setups
 
 ## Development
 
