@@ -3,6 +3,10 @@
 [![npm version](https://badge.fury.io/js/spec-up-migrate.svg)](https://www.npmjs.com/package/spec-up-migrate)
 [![NPM Downloads](https://img.shields.io/npm/dm/spec-up-migrate.svg?style=flat)](https://npmjs.org/package/spec-up-migrate)
 
+[![npm version](https://img.shields.io/npm/v/spec-up-migrate)](https://www.npmjs.com/package/spec-up-migrate)
+[![NPM Downloads](https://img.shields.io/npm/dm/spec-up-migrate.svg?style=flat)](https://npmjs.org/package/spec-up-migrate)
+
+
 A production-ready command-line tool for migrating Spec-Up specifications to Spec-Up-T. This tool provides enterprise-grade automation for transforming legacy Spec-Up projects to the modern Spec-Up-T framework with 95%+ detection confidence and professional HTML output generation.
 
 ## ✨ Features
