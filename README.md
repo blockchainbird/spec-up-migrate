@@ -1,8 +1,5 @@
 # Spec-Up Migrate
 
-[![npm version](https://badge.fury.io/js/spec-up-migrate.svg)](https://www.npmjs.com/package/spec-up-migrate)
-[![NPM Downloads](https://img.shields.io/npm/dm/spec-up-migrate.svg?style=flat)](https://npmjs.org/package/spec-up-migrate)
-
 [![npm version](https://img.shields.io/npm/v/spec-up-migrate)](https://www.npmjs.com/package/spec-up-migrate)
 [![NPM Downloads](https://img.shields.io/npm/dm/spec-up-migrate.svg?style=flat)](https://npmjs.org/package/spec-up-migrate)
 
