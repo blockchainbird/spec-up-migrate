@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
-const { split, splitGlossaryFile, checkSplittingConditions, getSplitterConfig, updateSpecsJsonAfterSplit } = require('../lib/splitter');
+const { split, splitGlossaryFile, checkSplittingConditions, getSplitterConfig, updateSpecsJsonAfterSplit, splitDefinitionSection } = require('../lib/splitter');
 
 // Test helper to create temporary test directory
 async function createTestEnvironment() {
@@ -243,6 +243,48 @@ Another definition.`;
     
     expect(fileNames).toContain('test-term');
     expect(fileNames).toContain('another-term');
+  });
+});
+
+describe('Split Definition Section', () => {
+  test('should split definition content from trailing content', () => {
+    const sectionContent = `Test Definition]]
+~This is part of the definition.
+~Another definition line.
+
+This is content after the definition.
+More trailing content.`;
+    
+    const result = splitDefinitionSection(sectionContent);
+    
+    expect(result.definitionContent).toContain('~This is part of the definition.');
+    expect(result.definitionContent).toContain('~Another definition line.');
+    expect(result.trailingContent).toContain('This is content after the definition.');
+    expect(result.trailingContent).toContain('More trailing content.');
+  });
+  
+  test('should handle definition with no trailing content', () => {
+    const sectionContent = `Test Definition]]
+~This is part of the definition.
+~Another definition line.`;
+    
+    const result = splitDefinitionSection(sectionContent);
+    
+    expect(result.definitionContent).toContain('~This is part of the definition.');
+    expect(result.definitionContent).toContain('~Another definition line.');
+    expect(result.trailingContent).toBeNull();
+  });
+  
+  test('should handle empty trailing content correctly', () => {
+    const sectionContent = `Test Definition]]
+~This is part of the definition.
+
+Some trailing content.`;
+    
+    const result = splitDefinitionSection(sectionContent);
+    
+    expect(result.definitionContent).toContain('~This is part of the definition.');
+    expect(result.trailingContent).toContain('Some trailing content.');
   });
 });
 
