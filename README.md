@@ -3,8 +3,25 @@
 [![npm version](https://img.shields.io/npm/v/spec-up-migrate)](https://www.npmjs.com/package/spec-up-migrate)
 [![NPM Downloads](https://img.shields.io/npm/dm/spec-up-migrate.svg?style=flat)](https://npmjs.org/package/spec-up-migrate)
 
-
 A production-ready command-line tool for migrating Spec-Up specifications to Spec-Up-T. This tool provides enterprise-grade automation for transforming legacy Spec-Up projects to the modern Spec-Up-T framework with 95%+ detection confidence and professional HTML output generation.
+
+## Table of Contents
+
+- [Features](#-features)
+- [Configuration Sources](#-configuration-sources)
+- [Latest Updates](#-latest-updates)
+- [Quick Start](#-quick-start)
+- [Installation Options](#-installation-options)
+- [Commands](#-commands)
+- [Migration Process](#migration-process)
+- [What Gets Migrated](#what-gets-migrated)
+- [Configuration Changes](#configuration-changes)
+- [Real-World Examples](#real-world-examples)
+- [After Migration](#after-migration)
+- [Contributing](#contributing)
+- [Development Workflow](#development-workflow)
+- [Release Process](#release-process)
+- [Support](#support)
 
 ## ✨ Features
 
@@ -29,17 +46,6 @@ The migration tool fetches the latest configurations from the official Spec-Up-T
 
 If remote fetching fails, the tool automatically falls back to built-in configurations that match the Spec-Up-T standards.
 
-## 🔧 Latest Updates
-
-- **✅ Fixed Configuration Source**: Now correctly fetches boilerplate from `blockchainbird/spec-up-t` repository
-- **✅ Dynamic Scripts**: Scripts configuration fetched from live repository for latest standards
-- **✅ Current Dependencies**: Uses Spec-Up-T v1.2.7 and current dependency versions
-- **✅ Improved Validation**: Built-in project validation ensures migration success
-- **✅ Better Error Handling**: Graceful fallbacks when remote fetching fails
-- **✂️ Glossary Splitter**: Integrated spec-up-splitter functionality for automatic glossary file splitting
-- **🔄 Enhanced Migration**: Splitting now included as final step in complete migration workflow
-- **🗑️ Automatic Cleanup**: Source glossary files are automatically removed from markdown_paths after successful splitting
-
 ## 🚀 Quick Start
 
 Run the migration tool directly with npx (recommended):
@@ -51,8 +57,8 @@ cd /path/to/your/spec-up-project
 # Run complete migration
 npx spec-up-migrate complete
 
-# Test the migrated project
-npm run render
+# Test the migrated project (choose your option from menu)
+npm run menu
 ```
 
 ## 📦 Installation Options
@@ -321,23 +327,27 @@ The cleanup process removes these obsolete files:
 ## 🛠️ What Gets Migrated
 
 ### Package.json Updates
+
 - ✅ Updates dependencies to use `spec-up-t` instead of `spec-up`
 - ✅ Adds all required Spec-Up-T scripts (edit, render, dev, etc.)
 - ✅ Preserves existing project metadata (name, version, author, etc.)
 - ✅ Removes obsolete configurations
 
 ### Specs.json Configuration
+
 - ✅ Converts to Spec-Up-T format with new required fields
 - ✅ Adds `spec_terms_directory` for terminology support
 - ✅ Converts `external_specs` format from Spec-Up to Spec-Up-T
 - ✅ Adds Spec-Up-T specific configurations (katex, etc.)
 
 ### Directory Structure
+
 - ✅ Creates `spec/terms-definitions/` directory for terminology
 - ✅ Adds required asset files for content insertion examples
 - ✅ Creates `.env.example` for configuration templates
 
 ### Gitignore Updates
+
 - ✅ Adds Spec-Up-T specific ignore patterns
 - ✅ Removes deprecated entries
 - ✅ Fetches latest patterns from official boilerplate
@@ -583,78 +593,3 @@ SKIP_DETECTION=true npx spec-up-migrate complete
 - Debugging detection issues
 - Testing migration on non-standard setups
 
-## Development
-
-### Setup
-
-```bash
-# Clone the repository
-git clone <repository-url>
-cd spec-up-migrate
-
-# Install dependencies  
-npm install
-
-# Make CLI executable
-chmod +x bin/cli.js
-```
-
-### Testing
-
-```bash
-# Link for local testing
-npm link
-
-# Test commands
-spec-up-migrate detect
-spec-up-migrate --help
-
-# Test with mock data
-cd mock-spec-up
-spec-up-migrate detect -v
-```
-
-### Project Structure
-
-```
-spec-up-migrate/
-├── bin/cli.js           # Command-line interface
-├── lib/
-│   ├── migrator.js      # Core migration logic
-│   └── updater.js       # Configuration updater with dynamic boilerplate
-├── package.json         # NPX configuration
-├── README.md           # Documentation
-└── mock-spec-up/       # Test environment
-```
-
-## Version History
-
-### v1.2.0 (Latest)
-- ✨ **Dynamic Boilerplate Fetching**: Automatically fetches latest Spec-Up-T configuration from remote repository
-- 🔄 **Smart External Specs Conversion**: Converts legacy object format to modern array structure
-- 🎯 **Improved Field Placement**: Ensures author/description fields are correctly placed at spec level
-- 🛠️ **Enhanced Fallback Support**: Works offline with built-in configuration matching remote structure
-- 🧹 **Code Quality**: Removed unused configurations not present in official boilerplate
-
-### v1.1.0 
-- 🚀 Initial production release with complete migration workflow
-
-## License
-
-MIT
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
-
-## Support
-
-For issues or questions:
-
-- Create an issue on GitHub
-- Check existing documentation
-- Review the troubleshooting section
