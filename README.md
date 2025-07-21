@@ -9,19 +9,12 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 
 - [Features](#-features)
 - [Configuration Sources](#-configuration-sources)
-- [Latest Updates](#-latest-updates)
 - [Quick Start](#-quick-start)
 - [Installation Options](#-installation-options)
 - [Commands](#-commands)
 - [Migration Process](#migration-process)
 - [What Gets Migrated](#what-gets-migrated)
 - [Configuration Changes](#configuration-changes)
-- [Real-World Examples](#real-world-examples)
-- [After Migration](#after-migration)
-- [Contributing](#contributing)
-- [Development Workflow](#development-workflow)
-- [Release Process](#release-process)
-- [Support](#support)
 
 ## ✨ Features
 
