@@ -53,6 +53,11 @@ describe('Spec-Up Migration Tool', () => {
   describe('Project Validation', () => {
     test('should validate a properly migrated project', async () => {
       const testDir = path.join(__dirname, '../test-temp');
+      
+      // First, set up the test directory by running configuration update without dry-run
+      await updateConfigurations(testDir, { dryRun: false });
+      
+      // Now validate the migrated project
       const result = await validateMigratedProject(testDir);
       
       expect(result.valid).toBe(true);
@@ -60,6 +65,13 @@ describe('Spec-Up Migration Tool', () => {
       expect(result.checkedFiles.length).toBeGreaterThan(0);
       expect(result.checkedFiles).toContain('package.json');
       expect(result.checkedFiles).toContain('specs.json');
+      
+      // Clean up after test
+      try {
+        await fs.rmdir(testDir, { recursive: true });
+      } catch (error) {
+        // Ignore cleanup errors
+      }
     });
 
     test('should detect invalid project structure', async () => {
