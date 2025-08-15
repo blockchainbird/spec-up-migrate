@@ -69,9 +69,7 @@ flowchart TD
   - `assets/test.text`
 - GitHub workflows (created only if missing; never overwritten)
   - `.github/workflows/menu.yml`
-  - `.github/workflows/render-specs.yml`
   - `.github/workflows/set-gh-pages.yml`
-  - `.github/workflows/fetch-and-push-xrefs.yml.old`
 - Splitter outputs (if split runs and safety checks pass)
   - `spec/.../glossary-intro-created-by-split-tool.md`
   - `spec/terms-definitions/*.md` (one per `[[def: ...]]`)
@@ -86,9 +84,7 @@ flowchart TD
 External boilerplate is fetched in `lib/updater.js` and written into the project if missing:
 
 - `.github/workflows/menu.yml`
-- `.github/workflows/render-specs.yml`
 - `.github/workflows/set-gh-pages.yml`
-- `.github/workflows/fetch-and-push-xrefs.yml.old`
 - `specs.json` boilerplate (used when `specs.json` is missing)
 - `package.json` scripts are populated from a remote config (with local fallback if fetching fails)
 - `.gitignore` entries are populated from a remote baseline (with fallback if fetching fails)
@@ -102,9 +98,7 @@ Primary boilerplate repo (code and workflows)
   - Example paths consumed by the tool:
     - `src/install-from-boilerplate/boilerplate/specs.json`
     - `src/install-from-boilerplate/boilerplate/.github/workflows/menu.yml`
-    - `src/install-from-boilerplate/boilerplate/.github/workflows/render-specs.yml`
     - `src/install-from-boilerplate/boilerplate/.github/workflows/set-gh-pages.yml`
-    - `src/install-from-boilerplate/boilerplate/.github/workflows/fetch-and-push-xrefs.yml.old`
     - `src/install-from-boilerplate/config-scripts-keys.js` (for scripts)
     - `src/install-from-boilerplate/boilerplate/gitignore` (for `.gitignore` entries)
 
