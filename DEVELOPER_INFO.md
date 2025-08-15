@@ -121,7 +121,7 @@ Logo and favicon in fallback config (referenced URLs only)
   - If missing: created with boilerplate entries (fallback if offline).
   - If present: appended with any missing boilerplate entries, and deprecated lines removed. Content is preserved otherwise.
 - `.github/workflows/*`
-  - Created only if missing (never overwrite existing files).
+  - Always overwrite existing files.
 - Root/spec/asset files listed above
   - Created only if missing.
 - Cleanup phase
@@ -134,9 +134,3 @@ Logo and favicon in fallback config (referenced URLs only)
 - Splitter safety checks prevent overwriting user content in `spec/terms-definitions` unless it already looks split (has `.md` files with `[[def:]]` or `[[tref:]]`).
 - Update logic has network fallbacks so the CLI still produces a working Spec‑Up‑T setup offline.
 - Installer creates `spec/sample.md` only when the spec directory is created fresh.
-
-## Why this file should stay and how to use it
-
-- Purpose: This repository is consumed via `npx` by other projects; keeping a precise, developer‑focused reference in the root helps maintainers and contributors understand the full migration flow and side effects without diving into the code.
-- Stability: It documents concrete behaviors (file creation, overwrites, remote sources) that are critical for users’ projects and test coverage.
-- Usage: Treat this as the canonical overview. When you change `lib/backup.js`, `lib/cleanup.js`, `lib/updater.js`, `lib/splitter.js`, or `lib/installer.js`, update the affected sections here (phases, files, sources, overwrite rules).
