@@ -191,7 +191,7 @@ Validate that a project meets Spec-Up-T requirements:
 
 ```bash
 # Validate current directory
-npx spec-up-migrate validate
+npx spec-up-migrate validate .
 
 # Validate specific project
 npx spec-up-migrate validate ./my-migrated-project
