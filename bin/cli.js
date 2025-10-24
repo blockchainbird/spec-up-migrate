@@ -15,6 +15,7 @@ const fs = require('fs');
 
 // Import the main functionality
 const { migrate, detect, backup, cleanup, updateConfigurations, install, completeMigration, split } = require('../lib/migrator');
+const { extractAllDefinitions, convertDefinitionsToIrefs } = require('../lib/splitter');
 
 // Read version from package.json
 const packageJson = require('../package.json');
@@ -456,10 +457,167 @@ program
     }
   });
 
+// Convert definitions to inline references command
+program
+  .command('convert-to-iref')
+  .alias('to-iref')
+  .description('Convert [[def:]] blocks to [[iref:]] inline references (removes ~ definition text)')
+  .argument('[directory]', 'Directory containing the specs.json and markdown files', '.')
+  .option('--dry-run', 'Show what would be converted without modifying files')
+  .option('--verbose', 'Show detailed output with each conversion')
+  .action(async (directory, options) => {
+    try {
+      console.log(chalk.blue('🔄 Converting [[def:]] blocks to [[iref:]] references...'));
+      console.log(chalk.gray(`Directory: ${path.resolve(directory)}`));
+      
+      if (options.dryRun) {
+        console.log(chalk.yellow('⚠️  Dry run mode - no files will be modified'));
+      }
+      console.log('');
+
+      const result = await convertDefinitionsToIrefs({
+        directory: directory,
+        dryRun: options.dryRun,
+        verbose: options.verbose
+      });
+      
+      console.log('');
+      
+      if (result.success) {
+        console.log(chalk.green('✅ Conversion completed successfully!'));
+        console.log('');
+        console.log(chalk.blue('Summary:'));
+        console.log(chalk.gray(`  Markdown files processed: ${result.filesProcessed.length}`));
+        console.log(chalk.gray(`  Definitions converted: ${result.conversions.length}`));
+        console.log(chalk.gray(`  [[def:]] → [[iref:]] transformations ${options.dryRun ? 'that would be made' : 'completed'}`));
+        
+        if (options.verbose && result.conversions.length > 0) {
+          console.log('');
+          console.log(chalk.blue('Conversions by file:'));
+          const byFile = {};
+          result.conversions.forEach(conv => {
+            if (!byFile[conv.file]) byFile[conv.file] = [];
+            byFile[conv.file].push(conv.term);
+          });
+          Object.entries(byFile).forEach(([file, terms]) => {
+            console.log(chalk.gray(`  ${file}: ${terms.join(', ')}`));
+          });
+        }
+        
+        console.log('');
+        console.log(chalk.green(`🎉 Successfully converted ${result.conversions.length} definition blocks to inline references!`));
+        console.log(chalk.blue('Next steps:'));
+        console.log(chalk.gray('  1. The [[def:]] blocks have been replaced with [[iref:]] references'));
+        console.log(chalk.gray('  2. Definition text (lines with ~) has been removed'));
+        console.log(chalk.gray('  3. The [[iref:]] will display the full definition from extracted term files'));
+        console.log(chalk.gray('  4. Run "npm run render" to verify the changes'));
+        
+      } else {
+        console.log(chalk.red('❌ Conversion failed'));
+        console.log('');
+        console.log(chalk.blue('Common issues:'));
+        console.log(chalk.gray('  - specs.json not found in the directory'));
+        console.log(chalk.gray('  - No markdown files with [[def:]] definitions found'));
+        console.log(chalk.gray('  - Run with --verbose for more details'));
+      }
+      
+    } catch (error) {
+      console.error(chalk.red('❌ Conversion failed:'), error.message);
+      
+      if (error.message.includes('specs.json')) {
+        console.log('');
+        console.log(chalk.blue('Make sure you are in a directory that contains:'));
+        console.log(chalk.gray('  - specs.json configuration file'));
+        console.log(chalk.gray('  - Markdown files in the spec_directory'));
+      }
+      
+      process.exit(1);
+    }
+  });
+
+// Extract all definitions command
+program
+  .command('extract-definitions')
+  .alias('extract')
+  .description('Extract all [[def:]] definitions from all markdown files into individual term files')
+  .argument('[directory]', 'Directory containing the specs.json and markdown files', '.')
+  .option('--dry-run', 'Show what would be done without creating files')
+  .option('--verbose', 'Show detailed output with each definition found')
+  .action(async (directory, options) => {
+    try {
+      console.log(chalk.blue('📖 Extracting definitions from all markdown files...'));
+      console.log(chalk.gray(`Directory: ${path.resolve(directory)}`));
+      
+      if (options.dryRun) {
+        console.log(chalk.yellow('⚠️  Dry run mode - no files will be created'));
+      }
+      console.log('');
+
+      const result = await extractAllDefinitions({
+        directory: directory,
+        dryRun: options.dryRun,
+        verbose: options.verbose
+      });
+      
+      console.log('');
+      
+      if (result.success) {
+        console.log(chalk.green('✅ Definition extraction completed successfully!'));
+        console.log('');
+        console.log(chalk.blue('Summary:'));
+        console.log(chalk.gray(`  Markdown files scanned: ${result.filesScanned.length}`));
+        console.log(chalk.gray(`  Definitions found: ${result.definitionsFound.length}`));
+        console.log(chalk.gray(`  Term files ${options.dryRun ? 'that would be created' : 'created'}: ${result.filesCreated.length}`));
+        
+        if (options.verbose && result.definitionsFound.length > 0) {
+          console.log('');
+          console.log(chalk.blue('Definitions by source file:'));
+          const byFile = {};
+          result.definitionsFound.forEach(def => {
+            if (!byFile[def.sourceFile]) byFile[def.sourceFile] = [];
+            byFile[def.sourceFile].push(def.term);
+          });
+          Object.entries(byFile).forEach(([file, terms]) => {
+            console.log(chalk.gray(`  ${file}: ${terms.join(', ')}`));
+          });
+        }
+        
+        console.log('');
+        console.log(chalk.green(`🎉 Successfully extracted ${result.definitionsFound.length} definitions!`));
+        console.log(chalk.blue('Next steps:'));
+        console.log(chalk.gray('  1. Review the generated term files in the spec_terms_directory'));
+        console.log(chalk.gray('  2. Optionally remove [[def:]] blocks from source markdown files'));
+        console.log(chalk.gray('  3. Run "npm run render" to test the new structure'));
+        
+      } else {
+        console.log(chalk.red('❌ Definition extraction failed'));
+        console.log('');
+        console.log(chalk.blue('Common issues:'));
+        console.log(chalk.gray('  - specs.json not found in the directory'));
+        console.log(chalk.gray('  - No markdown files with [[def:]] definitions found'));
+        console.log(chalk.gray('  - spec_terms_directory not properly configured in specs.json'));
+        console.log(chalk.gray('  - Run with --verbose for more details'));
+      }
+      
+    } catch (error) {
+      console.error(chalk.red('❌ Extraction failed:'), error.message);
+      
+      if (error.message.includes('specs.json')) {
+        console.log('');
+        console.log(chalk.blue('Make sure you are in a directory that contains:'));
+        console.log(chalk.gray('  - specs.json configuration file'));
+        console.log(chalk.gray('  - Markdown files in the spec_directory'));
+        console.log(chalk.gray('  - spec_terms_directory configured in specs.json'));
+      }
+      
+      process.exit(1);
+    }
+  });
+
 // Split command
 program
   .command('split')
-  .description('Split glossary file into individual term definition files')
+  .description('Split glossary file into individual term definition files (legacy - single file only)')
   .argument('[directory]', 'Directory containing the specs.json and glossary file', '.')
   .option('--dry-run', 'Show what would be done without making changes')
   .option('--verbose', 'Show detailed output')

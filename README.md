@@ -25,7 +25,9 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - 🔄 **Intelligent Conversion**: Convert legacy external_specs format to modern Spec-Up-T structure
 - 🚀 **Complete Setup**: Install Spec-Up-T with proper project structure and terminology support
 - ✂️ **Glossary Splitting**: Split glossary files into individual term definition files for better organization
-- 🔄 **End-to-End Migration**: Fully automated migration workflow including glossary splitting
+- 📖 **Multi-File Definition Extraction**: Extract all `[[def:]]` definitions from all markdown files into organized term files
+- � **Inline Reference Conversion**: Convert `[[def:]]` blocks to `[[iref:]]` inline references after extraction
+- �🔄 **End-to-End Migration**: Fully automated migration workflow including glossary splitting
 - ✅ **Validation**: Built-in validation to ensure migration success
 - 🎯 **Professional Output**: Generate publication-ready HTML specifications
 
@@ -240,6 +242,144 @@ npm run split
 - ✅ specs.json file with proper configuration
 - ✅ Glossary file exists (first item in markdown_paths)
 - ✅ Clean terms-definitions directory (no existing .md files)
+
+### 📖 Extract All Definitions (Recommended for Multi-File Projects)
+
+Extract all `[[def:]]` definitions from **all** markdown files into individual term definition files:
+
+```bash
+# Extract definitions from all markdown files in current directory
+npx spec-up-migrate extract-definitions
+
+# Extract from specific directory
+npx spec-up-migrate extract-definitions ./my-spec-project
+
+# Dry run to preview what would be extracted
+npx spec-up-migrate extract-definitions --dry-run
+
+# Verbose output showing each definition found
+npx spec-up-migrate extract-definitions --verbose
+
+# Short alias
+npx spec-up-migrate extract ./my-spec-project --verbose
+```
+
+**What this does:**
+
+1. 📁 Scans **all** markdown files in the spec_directory from specs.json
+2. 🔍 Finds every `[[def: ...]]` definition with its `~` content
+3. ✂️ Extracts each definition into a separate markdown file
+4. 📝 Names files based on the first term (sanitized for filenames)
+5. 🗂️ Places all files in the spec_terms_directory
+6. ⚠️ Detects and warns about duplicate definitions
+
+**Key Differences from `split`:**
+
+- ✅ Scans **ALL** markdown files (not just one glossary file)
+- ✅ Works with definitions scattered across multiple files
+- ✅ Handles definitions in appendices, chapters, guides, etc.
+- ✅ Creates only markdown files (no .env, .gitignore, etc.)
+- ✅ Reports duplicates found in different files
+
+**Requirements:**
+
+- ✅ specs.json with spec_directory and spec_terms_directory configured
+- ✅ Markdown files containing `[[def: ...]]` definitions with `~` content
+
+**Example Output:**
+
+```text
+📁 Scanning 22 markdown files
+✅ Found 72 unique definitions
+✅ Created 72 term files
+⚠️  Duplicate definition 'keri-event-stream-chain-of-custody' found in impl_guide.md
+```
+
+**Use this command when:**
+
+- You have definitions scattered across multiple markdown files
+- You're working with a specification that has definitions in various sections
+
+### 🔄 Convert Definitions to Inline References
+
+After extracting definitions, convert the original `[[def:]]` blocks to `[[iref:]]` inline references:
+
+```bash
+# Convert [[def:]] blocks to [[iref:]] in current directory
+npx spec-up-migrate convert-to-iref
+
+# Convert in specific directory
+npx spec-up-migrate convert-to-iref ./my-spec-project
+
+# Dry run to preview what would be converted
+npx spec-up-migrate convert-to-iref --dry-run
+
+# Verbose output showing each conversion
+npx spec-up-migrate convert-to-iref --verbose
+
+# Short alias
+npx spec-up-migrate to-iref ./my-spec-project --verbose
+```
+
+**What this does:**
+
+1. 🔍 Scans all markdown files for `[[def: term, alias]]` blocks
+2. ✂️ Replaces `[[def:]]` with `[[iref: term]]`
+3. 🗑️ Removes all `~` definition text lines
+4. 💾 Preserves the term and first alias in the `[[iref:]]`
+5. ✨ Creates inline references that display the full definition from extracted term files
+
+**Typical Workflow:**
+
+```bash
+# Step 1: Extract all definitions into separate files
+npx spec-up-migrate extract-definitions --verbose
+
+# Step 2: Convert original [[def:]] blocks to [[iref:]] references
+npx spec-up-migrate convert-to-iref --verbose
+
+# Step 3: Verify the changes
+npm run render
+```
+
+**Example Transformation:**
+
+Before:
+
+```markdown
+[[def: autonomous identifier, AID, AIDs]]
+~ A self-certifying identifier that is cryptographically
+~ bound to a key event log (KEL), as defined by the KERI
+~ specification.
+```
+
+After:
+
+```markdown
+[[iref: autonomous identifier]]
+```
+
+**Benefits:**
+
+- 🎯 **DRY Principle**: Definition exists in one place (term file)
+- 🔄 **Automatic Updates**: Changes to term files propagate to all `[[iref:]]` uses
+- 📖 **Inline Display**: Full definition appears where referenced
+- ✅ **Cleaner Source**: Removes repetitive definition text from main content
+- 🔗 **Consistent**: All references show the same canonical definition
+
+**Requirements:**
+
+- ✅ Run `extract-definitions` first to create term files
+- ✅ specs.json with spec_directory configured
+- ✅ Markdown files with `[[def:]]` blocks to convert
+
+**Use this command when:**
+
+- You've extracted definitions into separate term files
+- You want to remove duplicate definition text from your source files
+- You want inline references that automatically display current definitions
+- You want to centralize all terminology into individual files
+- You need to extract definitions from appendices, guides, or reference sections
 
 ### Legacy Migrate Command
 
