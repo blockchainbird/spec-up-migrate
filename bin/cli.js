@@ -14,8 +14,8 @@ const path = require('path');
 const fs = require('fs');
 
 // Import the main functionality
-const { migrate, detect, backup, cleanup, updateConfigurations, install, completeMigration, split } = require('../lib/migrator');
-const { extractAllDefinitions, convertDefinitionsToIrefs } = require('../lib/splitter');
+const { migrate, detect, backup, cleanup, updateConfigurations, install, completeMigration } = require('../lib/migrator');
+const { extractAllDefinitions, convertDefinitionsToIrefs, processDefinitions } = require('../lib/splitter');
 
 // Read version from package.json
 const packageJson = require('../package.json');
@@ -614,24 +614,25 @@ program
     }
   });
 
-// Split command
+// Process definitions command - Combined extract and convert
 program
-  .command('split')
-  .description('Split glossary file into individual term definition files (legacy - single file only)')
-  .argument('[directory]', 'Directory containing the specs.json and glossary file', '.')
-  .option('--dry-run', 'Show what would be done without making changes')
-  .option('--verbose', 'Show detailed output')
+  .command('process-definitions')
+  .alias('process')
+  .description('Extract [[def:]] from all markdown files and convert them to [[iref:]] (recommended workflow)')
+  .argument('[directory]', 'Directory containing specs.json and markdown files', '.')
+  .option('--dry-run', 'Preview what would be done without modifying files')
+  .option('--verbose', 'Show detailed output with each step')
   .action(async (directory, options) => {
     try {
-      console.log(chalk.blue('✂️  Starting glossary file splitting...'));
+      console.log(chalk.blue('🔄 Processing definitions: Extract and Convert'));
       console.log(chalk.gray(`Directory: ${path.resolve(directory)}`));
       
       if (options.dryRun) {
-        console.log(chalk.yellow('⚠️  Dry run mode - no files will be created'));
+        console.log(chalk.yellow('⚠️  Dry run mode - no files will be modified'));
       }
       console.log('');
 
-      const result = await split({
+      const result = await processDefinitions({
         directory: directory,
         dryRun: options.dryRun,
         verbose: options.verbose
@@ -639,49 +640,31 @@ program
       
       console.log('');
       
+      // Output messages
+      result.messages.forEach(message => {
+        if (typeof message === 'string') {
+          console.log(message);
+        }
+      });
+      
       if (result.success) {
-        console.log(chalk.green('✅ Glossary splitting completed successfully!'));
         console.log('');
-        console.log(chalk.blue('Summary:'));
-        console.log(chalk.gray(`  Files created: ${result.filesCreated.length}`));
-        
-        if (result.backupCreated) {
-          console.log(chalk.gray(`  Backup created: specs.unsplit.json`));
-        }
-        
-        if (options.verbose) {
-          console.log('');
-          console.log(chalk.blue('Created files:'));
-          result.filesCreated.forEach(file => {
-            console.log(chalk.gray(`  ${path.basename(file)}`));
-          });
-        }
-        
-        console.log('');
-        console.log(chalk.green('🎉 Your glossary has been split into individual term files!'));
-        console.log(chalk.blue('Next steps:'));
-        console.log(chalk.gray('  1. Review the generated term files in the terms-definitions directory'));
-        console.log(chalk.gray('  2. Update your specs.json to reference the new term files'));
-        console.log(chalk.gray('  3. Run "npm run render" to test the new structure'));
-        
+        console.log(chalk.green('✅ Definition processing completed!'));
       } else {
-        console.log(chalk.red('❌ Glossary splitting failed'));
         console.log('');
-        console.log(chalk.blue('Common issues:'));
-        console.log(chalk.gray('  - specs.json not found in the directory'));
-        console.log(chalk.gray('  - Glossary file specified in specs.json does not exist'));
-        console.log(chalk.gray('  - Term files already exist in the output directory'));
-        console.log(chalk.gray('  - Run with --verbose for more details'));
+        console.log(chalk.red('❌ Definition processing encountered issues'));
+        console.log(chalk.gray('Check the output above for details'));
       }
       
     } catch (error) {
-      console.error(chalk.red('❌ Splitting failed:'), error.message);
+      console.error(chalk.red('❌ Processing failed:'), error.message);
       
       if (error.message.includes('specs.json')) {
         console.log('');
         console.log(chalk.blue('Make sure you are in a directory that contains:'));
         console.log(chalk.gray('  - specs.json configuration file'));
-        console.log(chalk.gray('  - The glossary file specified in specs.json'));
+        console.log(chalk.gray('  - Markdown files in the spec_directory'));
+        console.log(chalk.gray('  - spec_terms_directory configured in specs.json'));
       }
       
       process.exit(1);
