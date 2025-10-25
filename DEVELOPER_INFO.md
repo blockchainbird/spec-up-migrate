@@ -6,6 +6,24 @@ This document explains what happens when running:
 
 It summarizes the control flow, which modules are involved, which files are created or modified, where external boilerplate files come from, and the overwrite rules. It also includes a simple flow chart.
 
+**Note:** As of v1.2.1, the detection logic has been significantly improved. The `--skip-detection` flag should rarely be needed for standard projects. It remains available for:
+- Testing and debugging
+- Highly customized project structures
+- CI/CD pipelines with pre-verified projects
+- Emergency bypasses
+
+## Improved Detection (v1.2.1+)
+
+The detection system now:
+- Recognizes `spec-up` OR `spec-up-t` dependencies
+- Detects spec-up-style scripts (render, edit, dev)
+- Identifies the spec-up tool itself (markdown-it + gulp)
+- Recognizes already-migrated projects
+- Uses a 70% confidence threshold (down from 80%)
+- Gives less weight to optional files (index.js, gulpfile.js)
+
+This means most valid Spec-Up projects will now pass detection without needing `--skip-detection`.
+
 ## High-level flow
 
 Entrypoint: `bin/cli.js`
