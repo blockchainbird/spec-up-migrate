@@ -7,6 +7,8 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 
 ## Table of Contents
 
+- [Why Migrate to Spec-Up-T?](#why-migrate-to-spec-up-t)
+- [Prerequisites](#prerequisites)
 - [Features](#-features)
 - [Configuration Sources](#-configuration-sources)
 - [Quick Start](#-quick-start)
@@ -15,6 +17,36 @@ A production-ready command-line tool for migrating Spec-Up specifications to Spe
 - [Migration Process](#migration-process)
 - [What Gets Migrated](#what-gets-migrated)
 - [Configuration Changes](#configuration-changes)
+
+## Why Migrate to Spec-Up-T?
+
+Spec-Up-T extends the original Spec-Up with powerful new features:
+
+- ✨ **Enhanced Terminology Support**: Individual term files with automatic definition management
+- 🔄 **Modern Definition System**: Use `[[iref:]]` inline references that automatically display current definitions
+- 📖 **Multi-File Definition Extraction**: Extract all `[[def:]]` definitions into organized term files
+- 🎯 **Professional Output**: Generate publication-ready HTML specifications
+- ⚡ **Better Configuration**: Dynamic configuration from the latest Spec-Up-T standards
+- 🚀 **Enhanced Developer Experience**: Improved scripts, validation, and live development mode
+
+## Prerequisites
+
+**You need a Spec-Up installation up and running.**
+
+If you're running a Spec-Up installation, you already have most of what you need:
+
+- **Node.js** version 18 or higher (already installed if you have Spec-Up)
+- **Terminal/Command Line** access
+- **Git** (recommended for version control)
+- A **text editor** or IDE (Visual Studio Code recommended)
+- A **web browser** to view your specifications
+
+> **Non-Technical Info:**
+>
+> - **Command Line**: A text interface to type commands for your computer
+> - **IDE**: Software where you can easily write, test, and debug code
+> - **Node.js**: The runtime that makes Spec-Up and Spec-Up-T work
+> - **Git**: A system to track and manage changes in your code
 
 ## ✨ Features
 
