@@ -107,11 +107,11 @@ program
       console.log('');
       
       // Show confidence level
-      const confidenceColor = result.confidence >= 80 ? 'green' : 
+      const confidenceColor = result.confidence >= 70 ? 'green' : 
                             result.confidence >= 50 ? 'yellow' : 'red';
       console.log(chalk[confidenceColor](`📊 Confidence: ${result.confidence}% - ${result.verdict}`));
       
-      if (result.confidence >= 80) {
+      if (result.confidence >= 70) {
         console.log(chalk.green('🚀 Ready for migration to Spec-Up-T'));
         console.log('');
         console.log(chalk.blue('Next steps:'));
@@ -448,7 +448,7 @@ program
     
     try {
       const result = await detect(source);
-      console.log(result.confidence >= 80 ? 
+      console.log(result.confidence >= 70 ? 
         chalk.green('✅ Valid Spec-Up installation detected') :
         chalk.red('❌ No valid Spec-Up installation found'));
     } catch (error) {

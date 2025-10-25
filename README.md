@@ -422,17 +422,24 @@ The migration from Spec-Up to Spec-Up-T involves several phases:
 
 ### Detection Scoring
 
-The detection system uses a confidence-based approach:
+The detection system uses a confidence-based approach with improved scoring:
 
-- **specs.json file**: 40% confidence
-- **package.json with spec-up dependency**: 30% confidence  
-- **index.js gulpfile**: 20% confidence
-- **Additional indicators** (2.5% each):
-  - gulpfile.js
-  - assets/ directory
-  - docs/ directory
-  - .github/workflows/
-  - Basic .gitignore patterns
+- **specs.json file with valid specs array**: 40% confidence
+- **package.json with spec-up/spec-up-t dependency OR spec-up-style scripts**: 30% confidence  
+- **index.js with spec-up patterns** (optional): 10% confidence
+- **Additional indicators**:
+  - gulpfile.js: 5% confidence (optional, removed during migration)
+  - assets/ directory: 2.5% confidence
+  - docs/ directory: 2.5% confidence
+  - .gitignore: 2.5% confidence
+
+**Detection threshold:** 70% confidence required (lowered from 80% to reduce false negatives)
+
+**Improved package.json detection:** Now recognizes:
+- Projects with `spec-up` or `spec-up-t` dependencies
+- Projects with spec-up-style scripts (render, edit, dev)
+- The spec-up tool itself (markdown-it + gulp dependencies)
+- Already-migrated spec-up-t projects
 
 ### Dynamic Boilerplate Fetching (v1.2.0)
 
@@ -735,8 +742,10 @@ SKIP_DETECTION=true npx spec-up-migrate complete
 ```
 
 **When to use `--skip-detection`:**
-- Detection confidence is below 80% but you know the project is valid Spec-Up
-- Working with a modified Spec-Up project structure
-- Debugging detection issues
-- Testing migration on non-standard setups
+- Testing migration changes without detection overhead
+- Working with highly customized project structures
+- Debugging detection issues (temporary bypass)
+- CI/CD pipelines where project validity is pre-verified
+
+**Note:** With improved detection (v1.2.1+), this flag should rarely be needed for standard projects.
 
