@@ -370,6 +370,12 @@ program
         console.log(chalk.gray(`  Detection confidence: ${detectionPhase.result.confidence}%`));
       }
       
+      // Find the project root phase result
+      const rootPhase = result.phases.find(phase => phase.name === 'Find Project Root');
+      if (rootPhase && rootPhase.result && rootPhase.result.found) {
+        console.log(chalk.gray(`  Project root found: ${rootPhase.result.root} (${rootPhase.result.type} project)`));
+      }
+      
       // Find the backup phase result
       const backupPhase = result.phases.find(phase => phase.name === 'Backup');
       if (backupPhase && backupPhase.result && !options.noBackup) {
